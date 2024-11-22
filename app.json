@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.adammckenna.expediate"
     },
     "web": {
       "bundler": "metro",
@@ -37,6 +38,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "7a64076c-77e5-4bab-ba36-5cbc1c684af5"
+      }
     }
   }
 }

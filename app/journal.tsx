@@ -81,25 +81,31 @@ const Journal = () => {
           <List.Item
             key={item.id}
             title={
-              <Text>
-                {item.title}
+              <Text style={{ display: 'flex', alignItems: 'flex-start' }}>
+                <Text>{item.title}</Text>
                 {
                   <Text
                     style={{
                       color: item.score > 0 ? '#00CA2C' : '#F02835',
                       fontSize: 10,
+                      marginLeft: 2,
+                      // todo: fix this
+                      lineHeight: 'normal' as any,
                     }}
                   >
-                    {item.score > 1 ? '+' : '-'}
+                    {item.score > 1 ? '+' : ''}
                     {item.score}
                   </Text>
                 }
               </Text>
             }
+            contentStyle={{
+              paddingLeft: 8,
+            }}
             description={item.description}
             titleStyle={{
               fontSize: 14,
-              lineHeight: 17,
+              lineHeight: 16,
               fontWeight: 500,
               fontFamily: 'Inter_500Medium',
               letterSpacing: -0.6,
@@ -112,13 +118,16 @@ const Journal = () => {
               letterSpacing: -0.6,
             }}
             left={() => (
-              <Text
+              <View
                 style={{
-                  color: item.score > 0 ? '#00CA2C' : '#F02835',
+                  backgroundColor: item.score > 0 ? '#CFFFD9' : '#FFCAD2',
+                  width: 32,
+                  height: 32,
+                  borderRadius: 6,
                 }}
               >
-                [ ]
-              </Text>
+                {/* todo: add SVG icons */}
+              </View>
             )}
           />
         ))}

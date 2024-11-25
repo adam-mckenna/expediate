@@ -3,18 +3,29 @@ import { Button } from 'react-native-elements'
 
 import {
   useFonts,
+  Inter_200ExtraLight,
   Inter_300Light,
   Inter_400Regular,
   Inter_900Black,
 } from '@expo-google-fonts/inter'
 import { BasicText } from '@/components/BasicText'
+import { useEffect, useState } from 'react'
 
 export default function Index() {
   let [fontsLoaded] = useFonts({
+    Inter_200ExtraLight,
     Inter_300Light,
     Inter_400Regular,
     Inter_900Black,
   })
+
+  const [input, setInput] = useState<string>()
+
+  const updateInput = (value: string) => {
+    if (input !== value) {
+      setInput(value)
+    }
+  }
 
   return !fontsLoaded ? (
     <View>
@@ -29,10 +40,11 @@ export default function Index() {
         automatically.
       </BasicText>
       <TextInput
+        value={input}
+        onChangeText={updateInput}
         multiline={true}
-        numberOfLines={10}
-        style={styles.textarea}
-        placeholderTextColor="rgba(118, 118, 118, 0.5)"
+        numberOfLines={8}
+        style={input ? styles.textarea : styles.placeholder}
         placeholder="Breakfast: 2 apples, 14 bananas, 1 serving oats..."
       />
       <View style={styles.buttonWrapper}>
@@ -46,6 +58,21 @@ export default function Index() {
     </View>
   )
 }
+
+const baseStyles = StyleSheet.create({
+  textarea: {
+    textAlignVertical: 'top',
+    padding: 16,
+    backgroundColor: '#F7F7F7',
+    borderRadius: 6,
+    borderWidth: 0.5,
+    borderColor: '#D9D9D9',
+    marginTop: 12,
+    marginBottom: 8,
+    fontSize: 12,
+    letterSpacing: -0.6,
+  },
+})
 
 const styles = StyleSheet.create({
   container: {
@@ -67,17 +94,12 @@ const styles = StyleSheet.create({
     fontWeight: 300,
     fontFamily: 'Inter_300Light',
   },
-  textarea: {
-    height: 200,
-    textAlignVertical: 'top',
-    padding: 16,
-    backgroundColor: '#F7F7F7',
-    borderRadius: 6,
-    borderWidth: 0.5,
-    borderColor: '#D9D9D9',
-    marginTop: 12,
-    marginBottom: 8,
-    fontSize: 12,
+  textarea: baseStyles.textarea,
+  placeholder: {
+    ...baseStyles.textarea,
+    color: 'rgba(118, 118, 118, 0.5)',
+    fontWeight: 200,
+    fontFamily: 'Inter_200ExtraLight',
   },
   buttonWrapper: { borderRadius: 6, overflow: 'hidden', fontSize: 4 },
   button: {

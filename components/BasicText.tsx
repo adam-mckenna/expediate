@@ -1,6 +1,6 @@
-import { useFonts, Inter_400Regular } from '@expo-google-fonts/inter'
+import { Text } from 'react-native'
 
-import { StyleProp, Text, TextStyle } from 'react-native'
+import { useFonts, Inter_400Regular } from '@expo-google-fonts/inter'
 
 export const BasicText = ({
   children,

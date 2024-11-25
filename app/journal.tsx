@@ -4,14 +4,60 @@ import { BasicText } from '@/components/BasicText'
 import {
   useFonts,
   Inter_400Regular,
+  Inter_500Medium,
   Inter_600SemiBold,
 } from '@expo-google-fonts/inter'
+import { List } from 'react-native-paper'
+
+const DummyData = [
+  {
+    id: '1',
+    title: 'Instant oats',
+    description: '1 serving',
+    score: 2,
+    occasion: 'breakfast',
+  },
+  {
+    id: '2',
+    title: 'Mango',
+    description: '1 serving',
+    score: 2,
+    occasion: 'breakfast',
+  },
+  {
+    id: '3',
+    title: 'Table sugar',
+    description: '1 serving',
+    score: -1,
+    occasion: 'breakfast',
+  },
+]
 
 const Journal = () => {
   let [fontsLoaded] = useFonts({
     Inter_400Regular,
+    Inter_500Medium,
     Inter_600SemiBold,
   })
+
+  const getTotalBreakfast = () =>
+    DummyData.filter((item) => item.occasion == 'breakfast').reduce(
+      (accumulator, current) => accumulator + current.score,
+      0,
+    )
+
+  const getBreakfastTotalString = () => {
+    const score = getTotalBreakfast()
+    const isPositive = score > 1
+
+    // todo: add chevron
+    return (
+      <Text style={{ color: isPositive ? '#00CA2C' : '#F02835' }}>
+        {isPositive ? '+' : '-'}
+        {score}
+      </Text>
+    )
+  }
 
   return (
     <View style={styles.container}>
@@ -25,7 +71,58 @@ const Journal = () => {
         </Text>
         .
       </BasicText>
+
       <Text style={styles.h2}>Let's break it down</Text>
+
+      <Text style={styles.h3}>Breakfast {getBreakfastTotalString()} </Text>
+
+      <View>
+        {DummyData.map((item) => (
+          <List.Item
+            key={item.id}
+            title={
+              <Text>
+                {item.title}
+                {
+                  <Text
+                    style={{
+                      color: item.score > 0 ? '#00CA2C' : '#F02835',
+                      fontSize: 10,
+                    }}
+                  >
+                    {item.score > 1 ? '+' : '-'}
+                    {item.score}
+                  </Text>
+                }
+              </Text>
+            }
+            description={item.description}
+            titleStyle={{
+              fontSize: 14,
+              lineHeight: 17,
+              fontWeight: 500,
+              fontFamily: 'Inter_500Medium',
+              letterSpacing: -0.6,
+            }}
+            descriptionStyle={{
+              color: '#767676',
+              fontSize: 10,
+              lineHeight: 12,
+              marginTop: 3,
+              letterSpacing: -0.6,
+            }}
+            left={() => (
+              <Text
+                style={{
+                  color: item.score > 0 ? '#00CA2C' : '#F02835',
+                }}
+              >
+                [ ]
+              </Text>
+            )}
+          />
+        ))}
+      </View>
     </View>
   )
 }
@@ -57,6 +154,15 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     letterSpacing: -0.6,
     marginTop: 26,
+  },
+  h3: {
+    fontFamily: 'Inter_600SemiBold',
+    fontWeight: 600,
+    fontSize: 16,
+    lineHeight: 19,
+    marginBottom: 6,
+    letterSpacing: -0.6,
+    marginTop: 12,
   },
 })
 

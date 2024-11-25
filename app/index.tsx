@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { StyleSheet, Text, TextInput, View } from 'react-native'
 import { Button } from 'react-native-elements'
+import { router } from 'expo-router'
 
 import {
   useFonts,
@@ -8,10 +10,10 @@ import {
   Inter_400Regular,
   Inter_900Black,
 } from '@expo-google-fonts/inter'
-import { BasicText } from '@/components/BasicText'
-import { useEffect, useState } from 'react'
 
-export default function Index() {
+import { BasicText } from '@/components/BasicText'
+
+const Index = () => {
   let [fontsLoaded] = useFonts({
     Inter_200ExtraLight,
     Inter_300Light,
@@ -21,9 +23,19 @@ export default function Index() {
 
   const [input, setInput] = useState<string>()
 
+  // const [isFinished, setIsFinished] = useState<boolean>(false)
+
   const updateInput = (value: string) => {
     if (input !== value) {
       setInput(value)
+    }
+  }
+
+  const handleOnButtonPress = () => {
+    if (input) {
+      // todo: add logic to parse data and send to BE.
+
+      router.push('/journal')
     }
   }
 
@@ -39,6 +51,7 @@ export default function Index() {
         Write out everything you ate, and we'll sort it into meals and servings
         automatically.
       </BasicText>
+      {/* todo: add error if form empty */}
       <TextInput
         value={input}
         onChangeText={updateInput}
@@ -50,6 +63,7 @@ export default function Index() {
       <View style={styles.buttonWrapper}>
         {/* todo: add arrow icon */}
         <Button
+          onPress={handleOnButtonPress}
           buttonStyle={styles.button}
           titleStyle={styles.buttonTitle}
           title="That's everything. Let's go!"
@@ -71,6 +85,9 @@ const baseStyles = StyleSheet.create({
     marginBottom: 8,
     fontSize: 12,
     letterSpacing: -0.6,
+    minHeight: 125,
+    fontFamily: 'Inter_400Regular',
+    fontWeight: 400,
   },
 })
 
@@ -107,3 +124,5 @@ const styles = StyleSheet.create({
   },
   buttonTitle: { fontSize: 12 },
 })
+
+export default Index

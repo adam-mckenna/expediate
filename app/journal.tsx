@@ -61,77 +61,85 @@ const Journal = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>
-        Nice! Your DQS score is <Text style={{ color: '#00CA2C' }}>+31</Text>
-      </Text>
-      <BasicText style={styles.subtext}>
-        Keep up the good work! If you want to improve more, try cutting back on{' '}
-        <Text style={{ fontWeight: 600, fontFamily: 'Inter_600SemiBold' }}>
-          table sugar
-        </Text>
-        .
-      </BasicText>
+      {fontsLoaded ? (
+        <>
+          <Text style={styles.title}>
+            Nice! Your DQS score is{' '}
+            <Text style={{ color: '#00CA2C' }}>+31</Text>
+          </Text>
+          <BasicText style={styles.subtext}>
+            Keep up the good work! If you want to improve more, try cutting back
+            on{' '}
+            <Text style={{ fontWeight: 600, fontFamily: 'Inter_600SemiBold' }}>
+              table sugar
+            </Text>
+            .
+          </BasicText>
 
-      <Text style={styles.h2}>Let's break it down</Text>
+          <Text style={styles.h2}>Let's break it down</Text>
 
-      <Text style={styles.h3}>Breakfast {getBreakfastTotalString()} </Text>
+          <Text style={styles.h3}>Breakfast {getBreakfastTotalString()} </Text>
 
-      <View>
-        {DummyData.map((item) => (
-          <List.Item
-            key={item.id}
-            title={
-              <Text style={{ display: 'flex', alignItems: 'flex-start' }}>
-                <Text>{item.title}</Text>
-                {
-                  <Text
-                    style={{
-                      color: item.score > 0 ? '#00CA2C' : '#F02835',
-                      fontSize: 10,
-                      marginLeft: 2,
-                      // todo: fix this
-                      lineHeight: 'normal' as any,
-                    }}
-                  >
-                    {item.score > 1 ? '+' : ''}
-                    {item.score}
+          <View>
+            {DummyData.map((item) => (
+              <List.Item
+                key={item.id}
+                title={
+                  <Text style={{ display: 'flex', alignItems: 'flex-start' }}>
+                    <Text>{item.title}</Text>
+                    {
+                      <Text
+                        style={{
+                          color: item.score > 0 ? '#00CA2C' : '#F02835',
+                          fontSize: 10,
+                          marginLeft: 2,
+                          // todo: fix this
+                          lineHeight: 'normal' as any,
+                        }}
+                      >
+                        {item.score > 1 ? '+' : ''}
+                        {item.score}
+                      </Text>
+                    }
                   </Text>
                 }
-              </Text>
-            }
-            contentStyle={{
-              paddingLeft: 8,
-            }}
-            description={item.description}
-            titleStyle={{
-              fontSize: 14,
-              lineHeight: 16,
-              fontWeight: 500,
-              fontFamily: 'Inter_500Medium',
-              letterSpacing: -0.6,
-            }}
-            descriptionStyle={{
-              color: '#767676',
-              fontSize: 10,
-              lineHeight: 12,
-              marginTop: 3,
-              letterSpacing: -0.6,
-            }}
-            left={() => (
-              <View
-                style={{
-                  backgroundColor: item.score > 0 ? '#CFFFD9' : '#FFCAD2',
-                  width: 32,
-                  height: 32,
-                  borderRadius: 6,
+                contentStyle={{
+                  paddingLeft: 8,
                 }}
-              >
-                {/* todo: add SVG icons */}
-              </View>
-            )}
-          />
-        ))}
-      </View>
+                description={item.description}
+                titleStyle={{
+                  fontSize: 14,
+                  lineHeight: 16,
+                  fontWeight: 500,
+                  fontFamily: 'Inter_500Medium',
+                  letterSpacing: -0.6,
+                }}
+                descriptionStyle={{
+                  color: '#767676',
+                  fontSize: 10,
+                  lineHeight: 12,
+                  marginTop: 3,
+                  letterSpacing: -0.6,
+                }}
+                left={() => (
+                  <View
+                    style={{
+                      backgroundColor: item.score > 0 ? '#CFFFD9' : '#FFCAD2',
+                      width: 32,
+                      height: 32,
+                      borderRadius: 6,
+                    }}
+                  >
+                    {/* todo: add SVG icons */}
+                  </View>
+                )}
+              />
+            ))}
+          </View>
+        </>
+      ) : (
+        <Text>Loading...</Text>
+      )}
     </View>
   )
 }

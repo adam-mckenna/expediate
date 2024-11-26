@@ -39,36 +39,38 @@ const Index = () => {
     }
   }
 
-  return !fontsLoaded ? (
-    <View>
-      <Text>Loading...</Text>
-    </View>
-  ) : (
+  return (
     <View style={styles.container}>
-      {/* todo: add help button */}
-      <Text style={styles.title}>What did you eat today?</Text>
-      <BasicText style={styles.subtext}>
-        Write out everything you ate, and we'll sort it into meals and servings
-        automatically.
-      </BasicText>
-      {/* todo: add error if form empty */}
-      <TextInput
-        value={input}
-        onChangeText={updateInput}
-        multiline={true}
-        numberOfLines={8}
-        style={input ? styles.textarea : styles.placeholder}
-        placeholder="Breakfast: 2 apples, 14 bananas, 1 serving oats..."
-      />
-      <View style={styles.buttonWrapper}>
-        {/* todo: add arrow icon */}
-        <Button
-          onPress={handleOnButtonPress}
-          buttonStyle={styles.button}
-          titleStyle={styles.buttonTitle}
-          title="That's everything. Let's go!"
-        />
-      </View>
+      {fontsLoaded ? (
+        <>
+          {/* todo: add help button */}
+          <Text style={styles.title}>What did you eat today?</Text>
+          <BasicText style={styles.subtext}>
+            Write out everything you ate, and we'll sort it into meals and
+            servings automatically.
+          </BasicText>
+          {/* todo: add error if form empty */}
+          <TextInput
+            value={input}
+            onChangeText={updateInput}
+            multiline={true}
+            numberOfLines={8}
+            style={input ? styles.textarea : styles.placeholder}
+            placeholder="Breakfast: 2 apples, 14 bananas, 1 serving oats..."
+          />
+          <View style={styles.buttonWrapper}>
+            {/* todo: add arrow icon */}
+            <Button
+              onPress={handleOnButtonPress}
+              buttonStyle={styles.button}
+              titleStyle={styles.buttonTitle}
+              title="That's everything. Let's go!"
+            />
+          </View>
+        </>
+      ) : (
+        <Text>Loading...</Text>
+      )}
     </View>
   )
 }

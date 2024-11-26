@@ -11,36 +11,54 @@ import {
 } from '@expo-google-fonts/inter'
 import { List } from 'react-native-paper'
 
-const DummyData = [
-  {
-    id: '1',
-    title: 'Instant oats',
-    description: '1 serving',
-    score: 2,
-    occasion: 'breakfast',
-  },
-  {
-    id: '2',
-    title: 'Mango',
-    description: '1 serving',
-    score: 2,
-    occasion: 'breakfast',
-  },
-  {
-    id: '3',
-    title: 'Table sugar',
-    description: '1 serving',
-    score: -1,
-    occasion: 'breakfast',
-  },
-  {
-    id: '4',
-    title: 'Table sugar',
-    description: '1 serving',
-    score: -1,
-    occasion: 'lunch',
-  },
-]
+interface Data {
+  breakfast: Array<Food>
+  lunch: Array<Food>
+  dinner: Array<Food>
+  snacks: Array<Food>
+}
+
+type Occasion = 'breakfast' | 'lunch' | 'dinner' | 'snacks'
+
+type Food = {
+  id: string
+  title: string
+  servings: number
+  score: number
+}
+
+const data: Data = {
+  breakfast: [
+    {
+      id: '1',
+      title: 'Instant oats',
+      servings: 1,
+      score: 2,
+    },
+    {
+      id: '2',
+      title: 'Mango',
+      servings: 1,
+      score: 2,
+    },
+    {
+      id: '3',
+      title: 'Table sugar',
+      servings: 1,
+      score: -1,
+    },
+  ],
+  lunch: [
+    {
+      id: '4',
+      title: 'Table sugar',
+      servings: 1,
+      score: -1,
+    },
+  ],
+  dinner: [],
+  snacks: [],
+}
 
 const Journal = () => {
   let [fontsLoaded] = useFonts({
@@ -51,14 +69,11 @@ const Journal = () => {
     Inter_900Black,
   })
 
-  const getTotalBreakfast = () =>
-    DummyData.filter(({ occasion }) => occasion == 'breakfast').reduce(
-      (accumulator, { score }) => accumulator + score,
-      0,
-    )
+  const getOccasionTotalDQS = (occasion: Occasion) =>
+    data[occasion].reduce((accumulator, { score }) => accumulator + score, 0)
 
-  const getBreakfastTotalString = () => {
-    const score = getTotalBreakfast()
+  const getOccasionTotalString = (occasion: Occasion) => {
+    const score = getOccasionTotalDQS(occasion)
     const isPositive = score > 1
 
     // todo: add chevron
@@ -70,7 +85,7 @@ const Journal = () => {
           lineHeight: 10,
         }}
       >
-        {isPositive ? '+' : '-'}
+        {isPositive ? '+' : ''}
         {score}
       </Text>
     )
@@ -81,6 +96,7 @@ const Journal = () => {
       {fontsLoaded ? (
         <>
           <Text style={styles.title}>
+            {/* todo: actually calculate DQS */}
             Nice! Your DQS score is{' '}
             <Text style={{ color: '#00CA2C' }}>+31</Text>
           </Text>
@@ -100,13 +116,14 @@ const Journal = () => {
               <View style={styles.ball}></View>
               <View style={styles.line}></View>
             </View>
-            <View>
+
+            <View style={styles.occasionData}>
               <Text style={styles.h3}>
-                Breakfast {getBreakfastTotalString()}{' '}
+                Breakfast {getOccasionTotalString('breakfast')}{' '}
               </Text>
 
               <View>
-                {DummyData.map((item) => (
+                {data.breakfast.map((item) => (
                   <List.Item
                     key={item.id}
                     title={
@@ -137,7 +154,84 @@ const Journal = () => {
                     style={{
                       padding: 0,
                     }}
-                    description={item.description}
+                    description={`${item.servings} serving`}
+                    titleStyle={{
+                      fontSize: 14,
+                      lineHeight: 16,
+                      fontWeight: 500,
+                      fontFamily: 'Inter_500Medium',
+                      letterSpacing: -0.6,
+                    }}
+                    descriptionStyle={{
+                      color: '#767676',
+                      fontSize: 10,
+                      lineHeight: 12,
+                      marginTop: 3,
+                      letterSpacing: -0.6,
+                    }}
+                    left={() => (
+                      <View
+                        style={{
+                          backgroundColor:
+                            item.score > 0 ? '#CFFFD9' : '#FFCAD2',
+                          width: 32,
+                          height: 32,
+                          borderRadius: 6,
+                        }}
+                      >
+                        {/* todo: add SVG icons */}
+                      </View>
+                    )}
+                  />
+                ))}
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.occasion}>
+            <View style={styles.timeline}>
+              <View style={styles.ball}></View>
+              <View style={styles.line}></View>
+            </View>
+
+            <View>
+              <Text style={styles.h3}>
+                Lunch {getOccasionTotalString('lunch')}{' '}
+              </Text>
+
+              <View>
+                {data.lunch.map((item) => (
+                  <List.Item
+                    key={item.id}
+                    title={
+                      <Text
+                        style={{ display: 'flex', alignItems: 'flex-start' }}
+                      >
+                        <Text>{item.title}</Text>
+                        {
+                          <Text
+                            style={{
+                              color: item.score > 0 ? '#00CA2C' : '#F02835',
+                              fontSize: 7,
+                              marginLeft: 3,
+                              // todo: type fix
+                              lineHeight: 'normal' as any,
+                            }}
+                          >
+                            {/* todo: add chevron */}
+                            {item.score > 1 ? '+' : ''}
+                            {item.score}
+                          </Text>
+                        }
+                      </Text>
+                    }
+                    contentStyle={{
+                      paddingLeft: 8,
+                    }}
+                    style={{
+                      padding: 0,
+                    }}
+                    description={`${item.servings} serving`}
                     titleStyle={{
                       fontSize: 14,
                       lineHeight: 16,
@@ -189,7 +283,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_900Black',
     fontSize: 24,
     lineHeight: 29,
-    marginBottom: 6,
+    marginBottom: 8,
     letterSpacing: -0.6,
   },
   subtext: {
@@ -202,7 +296,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_900Black',
     fontSize: 18,
     lineHeight: 22,
-    marginBottom: 6,
+    marginBottom: 12,
     letterSpacing: -0.6,
     marginTop: 26,
   },
@@ -216,12 +310,14 @@ const styles = StyleSheet.create({
     display: 'flex',
   },
   occasion: {
-    marginTop: 12,
     display: 'flex',
     flexDirection: 'row',
   },
+  occasionData: {
+    paddingBottom: 16,
+  },
   timeline: {
-    marginRight: 10,
+    marginRight: 12,
     marginTop: 4,
     height: 'auto',
     display: 'flex',

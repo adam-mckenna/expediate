@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
-import { BasicText } from '@/components/BasicText'
+import { List } from 'react-native-paper'
 
 import {
   useFonts,
@@ -9,7 +9,9 @@ import {
   Inter_600SemiBold,
   Inter_900Black,
 } from '@expo-google-fonts/inter'
-import { List } from 'react-native-paper'
+
+import { BasicText } from '@/components/BasicText'
+import FruitIcon from '@/components/icons/Fruit'
 
 interface Data {
   breakfast: Array<Food>
@@ -20,30 +22,47 @@ interface Data {
 
 type Occasion = 'breakfast' | 'lunch' | 'dinner' | 'snacks'
 
+type FoodCategory =
+  | 'fruit'
+  | 'vegetables'
+  | 'whole-grains'
+  | 'lean-meat-or-fish'
+  | 'nuts-and-seeds'
+  | 'dairy'
+  | 'refined-grains'
+  | 'sweets'
+  | 'fried-foods'
+  | 'fatty-proteins'
+
 type Food = {
   id: string
   title: string
+  category: FoodCategory
   servings: number
   score: number
 }
 
+// todo: replace with API data.
 const data: Data = {
   breakfast: [
     {
       id: '1',
       title: 'Instant oats',
+      category: 'whole-grains',
       servings: 1,
       score: 2,
     },
     {
       id: '2',
       title: 'Mango',
+      category: 'fruit',
       servings: 1,
       score: 2,
     },
     {
       id: '3',
       title: 'Table sugar',
+      category: 'sweets',
       servings: 1,
       score: -1,
     },
@@ -52,6 +71,7 @@ const data: Data = {
     {
       id: '4',
       title: 'Table sugar',
+      category: 'sweets',
       servings: 1,
       score: -1,
     },
@@ -177,8 +197,12 @@ const Journal = () => {
                           width: 32,
                           height: 32,
                           borderRadius: 6,
+
+                          alignItems: 'center',
+                          justifyContent: 'center',
                         }}
                       >
+                        {item.category === 'fruit' ? <FruitIcon /> : <></>}
                         {/* todo: add SVG icons */}
                       </View>
                     )}
@@ -256,7 +280,7 @@ const Journal = () => {
                           borderRadius: 6,
                         }}
                       >
-                        {/* todo: add SVG icons */}
+                        {/* todo: icon */}
                       </View>
                     )}
                   />

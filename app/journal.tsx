@@ -11,7 +11,11 @@ import {
 } from '@expo-google-fonts/inter'
 
 import { BasicText } from '@/components/BasicText'
+
 import FruitIcon from '@/components/icons/Fruit'
+import SweetIcon from '@/components/icons/Sweet'
+import WholeGrainIcon from '@/components/icons/WholeGrain'
+import PlusIcon from '@/components/icons/Plus'
 
 interface Data {
   breakfast: Array<Food>
@@ -61,16 +65,44 @@ const data: Data = {
     },
     {
       id: '3',
-      title: 'Table sugar',
-      category: 'sweets',
+      title: 'Basil seeds',
+      category: 'nuts-and-seeds',
       servings: 1,
-      score: -1,
+      score: 2,
+    },
+    {
+      id: '5',
+      title: 'Soy milk (unsweetened)',
+      category: 'dairy',
+      servings: 1,
+      score: 1,
+    },
+    {
+      id: '6',
+      title: 'Banana',
+      category: 'fruit',
+      servings: 1,
+      score: 1,
+    },
+    {
+      id: '6',
+      title: 'Peanut butter',
+      category: 'nuts-and-seeds',
+      servings: 1,
+      score: 1,
     },
   ],
   lunch: [
     {
       id: '4',
       title: 'Table sugar',
+      category: 'sweets',
+      servings: 1,
+      score: -1,
+    },
+    {
+      id: '5',
+      title: 'Banana bread',
       category: 'sweets',
       servings: 1,
       score: -1,
@@ -109,6 +141,23 @@ const Journal = () => {
         {score}
       </Text>
     )
+  }
+
+  // todo: create more icons for other categories.
+  const getIcon = (category: FoodCategory) => {
+    let icon = <></>
+    switch (category) {
+      case 'fruit':
+        icon = <FruitIcon />
+        break
+      case 'sweets':
+        icon = <SweetIcon />
+        break
+      case 'whole-grains':
+        icon = <WholeGrainIcon />
+        break
+    }
+    return icon
   }
 
   return (
@@ -162,7 +211,7 @@ const Journal = () => {
                             }}
                           >
                             {/* todo: add chevron */}
-                            {item.score > 1 ? '+' : ''}
+                            {item.score > 0 ? '+' : ''}
                             {item.score}
                           </Text>
                         }
@@ -197,17 +246,56 @@ const Journal = () => {
                           width: 32,
                           height: 32,
                           borderRadius: 6,
-
                           alignItems: 'center',
                           justifyContent: 'center',
                         }}
                       >
-                        {item.category === 'fruit' ? <FruitIcon /> : <></>}
-                        {/* todo: add SVG icons */}
+                        {getIcon(item.category)}
                       </View>
                     )}
                   />
                 ))}
+
+                <List.Item
+                  key="add more"
+                  title="Add new item"
+                  contentStyle={{
+                    paddingLeft: 8,
+                  }}
+                  style={{
+                    padding: 0,
+                  }}
+                  titleStyle={{
+                    fontSize: 12,
+                    lineHeight: 14,
+                    fontWeight: 400,
+                    fontFamily: 'Inter_400Regular',
+                    letterSpacing: -0.6,
+                  }}
+                  descriptionStyle={{
+                    color: '#767676',
+                    fontSize: 10,
+                    lineHeight: 12,
+                    marginTop: 3,
+                    letterSpacing: -0.6,
+                  }}
+                  left={() => (
+                    <View
+                      style={{
+                        width: 24,
+                        height: 24,
+                        marginLeft: 4,
+                        marginRight: 4,
+                        borderRadius: 6,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: '#D9D9D9',
+                      }}
+                    >
+                      <PlusIcon />
+                    </View>
+                  )}
+                />
               </View>
             </View>
           </View>
@@ -243,7 +331,7 @@ const Journal = () => {
                             }}
                           >
                             {/* todo: add chevron */}
-                            {item.score > 1 ? '+' : ''}
+                            {item.score > 0 ? '+' : ''}
                             {item.score}
                           </Text>
                         }
@@ -278,9 +366,11 @@ const Journal = () => {
                           width: 32,
                           height: 32,
                           borderRadius: 6,
+                          alignItems: 'center',
+                          justifyContent: 'center',
                         }}
                       >
-                        {/* todo: icon */}
+                        {getIcon(item.category)}
                       </View>
                     )}
                   />

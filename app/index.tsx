@@ -23,8 +23,6 @@ const Index = () => {
 
   const [input, setInput] = useState<string>()
 
-  // const [isFinished, setIsFinished] = useState<boolean>(false)
-
   const updateInput = (value: string) => {
     if (input !== value) {
       setInput(value)

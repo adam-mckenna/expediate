@@ -1,8 +1,10 @@
-import { StyleSheet, Text, View } from 'react-native'
-import { List } from 'react-native-paper'
+import { useState } from 'react'
+import { ScrollView, StyleSheet, Text, TextInput } from 'react-native'
+import { Portal, Dialog, Button, Snackbar } from 'react-native-paper'
 
 import {
   useFonts,
+  Inter_200ExtraLight,
   Inter_300Light,
   Inter_400Regular,
   Inter_500Medium,
@@ -11,39 +13,14 @@ import {
 } from '@expo-google-fonts/inter'
 
 import { BasicText } from '@/components/BasicText'
+import JournalOccasion from '@/components/JournalOccasion'
+import { Food } from '@/types/Types'
 
-import FruitIcon from '@/components/icons/Fruit'
-import SweetIcon from '@/components/icons/Sweet'
-import WholeGrainIcon from '@/components/icons/WholeGrain'
-import PlusIcon from '@/components/icons/Plus'
-
-interface Data {
+export interface Data {
   breakfast: Array<Food>
   lunch: Array<Food>
   dinner: Array<Food>
   snacks: Array<Food>
-}
-
-type Occasion = 'breakfast' | 'lunch' | 'dinner' | 'snacks'
-
-type FoodCategory =
-  | 'fruit'
-  | 'vegetables'
-  | 'whole-grains'
-  | 'lean-meat-or-fish'
-  | 'nuts-and-seeds'
-  | 'dairy'
-  | 'refined-grains'
-  | 'sweets'
-  | 'fried-foods'
-  | 'fatty-proteins'
-
-type Food = {
-  id: string
-  title: string
-  category: FoodCategory
-  servings: number
-  score: number
 }
 
 // todo: replace with API data.
@@ -85,7 +62,7 @@ const data: Data = {
       score: 1,
     },
     {
-      id: '6',
+      id: '7',
       title: 'Peanut butter',
       category: 'nuts-and-seeds',
       servings: 1,
@@ -108,12 +85,29 @@ const data: Data = {
       score: -1,
     },
   ],
-  dinner: [],
-  snacks: [],
+  dinner: [
+    {
+      id: '100',
+      title: 'Sweet potato',
+      category: 'vegetables',
+      servings: 1,
+      score: 2,
+    },
+  ],
+  snacks: [
+    {
+      id: '4000',
+      title: 'Cocoa powder',
+      category: 'undefined',
+      servings: 1,
+      score: 0,
+    },
+  ],
 }
 
 const Journal = () => {
   let [fontsLoaded] = useFonts({
+    Inter_200ExtraLight,
     Inter_300Light,
     Inter_400Regular,
     Inter_500Medium,
@@ -121,47 +115,23 @@ const Journal = () => {
     Inter_900Black,
   })
 
-  const getOccasionTotalDQS = (occasion: Occasion) =>
-    data[occasion].reduce((accumulator, { score }) => accumulator + score, 0)
+  const [isDialogVisible, setIsDialogVisible] = useState(false)
+  const [isSnackbarVisible, setIsSnackbarVisible] = useState(false)
 
-  const getOccasionTotalString = (occasion: Occasion) => {
-    const score = getOccasionTotalDQS(occasion)
-    const isPositive = score > 1
+  const [input, setInput] = useState<string>()
 
-    // todo: add chevron
-    return (
-      <Text
-        style={{
-          color: isPositive ? '#00CA2C' : '#F02835',
-          fontSize: 10,
-          lineHeight: 10,
-        }}
-      >
-        {isPositive ? '+' : ''}
-        {score}
-      </Text>
-    )
+  const handleOnButtonClick = () => {
+    setIsDialogVisible(true)
   }
 
-  // todo: create more icons for other categories.
-  const getIcon = (category: FoodCategory) => {
-    let icon = <></>
-    switch (category) {
-      case 'fruit':
-        icon = <FruitIcon />
-        break
-      case 'sweets':
-        icon = <SweetIcon />
-        break
-      case 'whole-grains':
-        icon = <WholeGrainIcon />
-        break
+  const updateInput = (value: string) => {
+    if (input !== value) {
+      setInput(value)
     }
-    return icon
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       {fontsLoaded ? (
         <>
           <Text style={styles.title}>
@@ -169,6 +139,7 @@ const Journal = () => {
             Nice! Your DQS score is{' '}
             <Text style={{ color: '#00CA2C' }}>+31</Text>
           </Text>
+
           <BasicText style={styles.subtext}>
             Keep up the good work! If you want to improve more, try cutting back
             on{' '}
@@ -180,211 +151,101 @@ const Journal = () => {
 
           <Text style={styles.h2}>Let's break it down</Text>
 
-          <View style={styles.occasion}>
-            <View style={styles.timeline}>
-              <View style={styles.ball}></View>
-              <View style={styles.line}></View>
-            </View>
-
-            <View style={styles.occasionData}>
-              <Text style={styles.h3}>
-                Breakfast {getOccasionTotalString('breakfast')}{' '}
-              </Text>
-
-              <View>
-                {data.breakfast.map((item) => (
-                  <List.Item
-                    key={item.id}
-                    title={
-                      <Text
-                        style={{ display: 'flex', alignItems: 'flex-start' }}
-                      >
-                        <Text>{item.title}</Text>
-                        {
-                          <Text
-                            style={{
-                              color: item.score > 0 ? '#00CA2C' : '#F02835',
-                              fontSize: 7,
-                              marginLeft: 3,
-                              // todo: type fix
-                              lineHeight: 'normal' as any,
-                            }}
-                          >
-                            {/* todo: add chevron */}
-                            {item.score > 0 ? '+' : ''}
-                            {item.score}
-                          </Text>
-                        }
-                      </Text>
-                    }
-                    contentStyle={{
-                      paddingLeft: 8,
-                    }}
-                    style={{
-                      padding: 0,
-                    }}
-                    description={`${item.servings} serving`}
-                    titleStyle={{
-                      fontSize: 14,
-                      lineHeight: 16,
-                      fontWeight: 500,
-                      fontFamily: 'Inter_500Medium',
-                      letterSpacing: -0.6,
-                    }}
-                    descriptionStyle={{
-                      color: '#767676',
-                      fontSize: 10,
-                      lineHeight: 12,
-                      marginTop: 3,
-                      letterSpacing: -0.6,
-                    }}
-                    left={() => (
-                      <View
-                        style={{
-                          backgroundColor:
-                            item.score > 0 ? '#CFFFD9' : '#FFCAD2',
-                          width: 32,
-                          height: 32,
-                          borderRadius: 6,
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        {getIcon(item.category)}
-                      </View>
-                    )}
-                  />
-                ))}
-
-                <List.Item
-                  key="add more"
-                  title="Add new item"
-                  contentStyle={{
-                    paddingLeft: 8,
-                  }}
-                  style={{
-                    padding: 0,
-                  }}
-                  titleStyle={{
-                    fontSize: 12,
-                    lineHeight: 14,
-                    fontWeight: 400,
-                    fontFamily: 'Inter_400Regular',
-                    letterSpacing: -0.6,
-                  }}
-                  descriptionStyle={{
-                    color: '#767676',
-                    fontSize: 10,
-                    lineHeight: 12,
-                    marginTop: 3,
-                    letterSpacing: -0.6,
-                  }}
-                  left={() => (
-                    <View
-                      style={{
-                        width: 24,
-                        height: 24,
-                        marginLeft: 4,
-                        marginRight: 4,
-                        borderRadius: 6,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: '#D9D9D9',
-                      }}
-                    >
-                      <PlusIcon />
-                    </View>
-                  )}
-                />
-              </View>
-            </View>
-          </View>
-
-          <View style={styles.occasion}>
-            <View style={styles.timeline}>
-              <View style={styles.ball}></View>
-              <View style={styles.line}></View>
-            </View>
-
-            <View>
-              <Text style={styles.h3}>
-                Lunch {getOccasionTotalString('lunch')}{' '}
-              </Text>
-
-              <View>
-                {data.lunch.map((item) => (
-                  <List.Item
-                    key={item.id}
-                    title={
-                      <Text
-                        style={{ display: 'flex', alignItems: 'flex-start' }}
-                      >
-                        <Text>{item.title}</Text>
-                        {
-                          <Text
-                            style={{
-                              color: item.score > 0 ? '#00CA2C' : '#F02835',
-                              fontSize: 7,
-                              marginLeft: 3,
-                              // todo: type fix
-                              lineHeight: 'normal' as any,
-                            }}
-                          >
-                            {/* todo: add chevron */}
-                            {item.score > 0 ? '+' : ''}
-                            {item.score}
-                          </Text>
-                        }
-                      </Text>
-                    }
-                    contentStyle={{
-                      paddingLeft: 8,
-                    }}
-                    style={{
-                      padding: 0,
-                    }}
-                    description={`${item.servings} serving`}
-                    titleStyle={{
-                      fontSize: 14,
-                      lineHeight: 16,
-                      fontWeight: 500,
-                      fontFamily: 'Inter_500Medium',
-                      letterSpacing: -0.6,
-                    }}
-                    descriptionStyle={{
-                      color: '#767676',
-                      fontSize: 10,
-                      lineHeight: 12,
-                      marginTop: 3,
-                      letterSpacing: -0.6,
-                    }}
-                    left={() => (
-                      <View
-                        style={{
-                          backgroundColor:
-                            item.score > 0 ? '#CFFFD9' : '#FFCAD2',
-                          width: 32,
-                          height: 32,
-                          borderRadius: 6,
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        {getIcon(item.category)}
-                      </View>
-                    )}
-                  />
-                ))}
-              </View>
-            </View>
-          </View>
+          <JournalOccasion
+            data={data}
+            handleOnButtonClick={handleOnButtonClick}
+            occasion="breakfast"
+          />
+          <JournalOccasion
+            data={data}
+            handleOnButtonClick={handleOnButtonClick}
+            occasion="lunch"
+          />
+          <JournalOccasion
+            data={data}
+            handleOnButtonClick={handleOnButtonClick}
+            occasion="dinner"
+          />
+          <JournalOccasion
+            data={data}
+            handleOnButtonClick={handleOnButtonClick}
+            isLast={true}
+            occasion="snacks"
+          />
         </>
       ) : (
         <Text>Loading...</Text>
       )}
-    </View>
+
+      <Portal>
+        <Dialog
+          visible={isDialogVisible}
+          onDismiss={handleOnButtonClick}
+          style={{
+            backgroundColor: 'white',
+          }}
+        >
+          <Dialog.Title>Add new item</Dialog.Title>
+          <Dialog.Content>
+            <TextInput
+              value={input}
+              onChangeText={updateInput}
+              multiline={true}
+              numberOfLines={8}
+              style={input ? styles.textarea : styles.placeholder}
+              placeholder="Breakfast: 2 apples, 14 bananas, 1 serving oats..."
+            />
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={handleOnButtonClick}>Cancel</Button>
+            <Button
+              onPress={() => {
+                // todo: add logic to add item
+                setIsDialogVisible(false)
+                setIsSnackbarVisible(true)
+              }}
+              mode="contained"
+              style={{ paddingLeft: 8, paddingRight: 8, borderRadius: 6 }}
+            >
+              Done
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+
+        <Snackbar
+          visible={isSnackbarVisible}
+          onDismiss={() => {
+            setIsSnackbarVisible(false)
+          }}
+          action={{
+            label: 'Great!',
+            onPress: () => {
+              setIsSnackbarVisible(false)
+            },
+          }}
+        >
+          "Instant oats" added
+        </Snackbar>
+      </Portal>
+    </ScrollView>
   )
 }
+
+const baseStyles = StyleSheet.create({
+  textarea: {
+    textAlignVertical: 'top',
+    padding: 16,
+    backgroundColor: '#F7F7F7',
+    borderRadius: 6,
+    borderWidth: 0.5,
+    borderColor: '#D9D9D9',
+    fontSize: 12,
+    letterSpacing: -0.6,
+    minHeight: 125,
+    fontFamily: 'Inter_400Regular',
+    fontWeight: 400,
+  },
+})
 
 const styles = StyleSheet.create({
   container: {
@@ -414,39 +275,12 @@ const styles = StyleSheet.create({
     letterSpacing: -0.6,
     marginTop: 26,
   },
-  h3: {
-    fontFamily: 'Inter_600SemiBold',
-    fontWeight: 600,
-    fontSize: 16,
-    lineHeight: 19,
-    marginBottom: 4,
-    letterSpacing: -0.6,
-    display: 'flex',
-  },
-  occasion: {
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  occasionData: {
-    paddingBottom: 16,
-  },
-  timeline: {
-    marginRight: 12,
-    marginTop: 4,
-    height: 'auto',
-    display: 'flex',
-    alignItems: 'center',
-  },
-  ball: {
-    width: 9,
-    height: 9,
-    borderRadius: '100%',
-    backgroundColor: '#FD7121',
-  },
-  line: {
-    width: 1,
-    height: '100%',
-    backgroundColor: '#FD7121',
+  textarea: baseStyles.textarea,
+  placeholder: {
+    ...baseStyles.textarea,
+    color: 'rgba(118, 118, 118, 0.5)',
+    fontWeight: 200,
+    fontFamily: 'Inter_200ExtraLight',
   },
 })
 

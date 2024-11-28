@@ -12,9 +12,10 @@ import {
   Inter_900Black,
 } from '@expo-google-fonts/inter'
 
+import { Food } from '@/types/Types'
+
 import { BasicText } from '@/components/BasicText'
 import JournalOccasion from '@/components/JournalOccasion'
-import { Food } from '@/types/Types'
 
 export interface Data {
   breakfast: Array<Food>
@@ -130,6 +131,8 @@ const Journal = () => {
     }
   }
 
+  const dismissSnackbar = () => setIsSnackbarVisible(false)
+
   return (
     <ScrollView style={styles.container}>
       {fontsLoaded ? (
@@ -214,14 +217,10 @@ const Journal = () => {
 
         <Snackbar
           visible={isSnackbarVisible}
-          onDismiss={() => {
-            setIsSnackbarVisible(false)
-          }}
+          onDismiss={dismissSnackbar}
           action={{
             label: 'Great!',
-            onPress: () => {
-              setIsSnackbarVisible(false)
-            },
+            onPress: dismissSnackbar,
           }}
         >
           "Instant oats" added

@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ScrollView, StyleSheet, Text, TextInput } from 'react-native'
 import { Portal, Dialog, Button, Snackbar } from 'react-native-paper'
+
+import { format } from 'date-fns'
 
 import {
   useFonts,
@@ -24,88 +26,6 @@ export interface Data {
   snacks: Array<Food>
 }
 
-// todo: replace with API data.
-const data: Data = {
-  breakfast: [
-    {
-      id: '1',
-      title: 'Instant oats',
-      category: 'whole-grains',
-      servings: 1,
-      score: 2,
-    },
-    {
-      id: '2',
-      title: 'Mango',
-      category: 'fruit',
-      servings: 1,
-      score: 2,
-    },
-    {
-      id: '3',
-      title: 'Basil seeds',
-      category: 'nuts-and-seeds',
-      servings: 1,
-      score: 2,
-    },
-    {
-      id: '5',
-      title: 'Soy milk (unsweetened)',
-      category: 'dairy',
-      servings: 1,
-      score: 1,
-    },
-    {
-      id: '6',
-      title: 'Banana',
-      category: 'fruit',
-      servings: 1,
-      score: 1,
-    },
-    {
-      id: '7',
-      title: 'Peanut butter',
-      category: 'nuts-and-seeds',
-      servings: 1,
-      score: 1,
-    },
-  ],
-  lunch: [
-    {
-      id: '4',
-      title: 'Table sugar',
-      category: 'sweets',
-      servings: 1,
-      score: -1,
-    },
-    {
-      id: '5',
-      title: 'Banana bread',
-      category: 'sweets',
-      servings: 1,
-      score: -1,
-    },
-  ],
-  dinner: [
-    {
-      id: '100',
-      title: 'Sweet potato',
-      category: 'vegetables',
-      servings: 1,
-      score: 2,
-    },
-  ],
-  snacks: [
-    {
-      id: '4000',
-      title: 'Cocoa powder',
-      category: 'undefined',
-      servings: 1,
-      score: 0,
-    },
-  ],
-}
-
 const Journal = () => {
   let [fontsLoaded] = useFonts({
     Inter_200ExtraLight,
@@ -115,6 +35,33 @@ const Journal = () => {
     Inter_600SemiBold,
     Inter_900Black,
   })
+
+  const [data, setData] = useState<Data | null>()
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const today = format(new Date(), 'dMyyyy')
+      console.log(today)
+
+      try {
+        const response = await fetch(
+          `http://localhost:3000/journal?date=${today}`,
+        )
+        if (!response.ok) {
+          throw new Error('Failed to fetch')
+        }
+        const result = await response.json()
+        setData(result[0])
+        console.log(result[0])
+      } catch (err) {
+        // todo: fix type
+        setError((err as any).message)
+      }
+    }
+
+    fetchData()
+  }, [])
 
   const [isDialogVisible, setIsDialogVisible] = useState(false)
   const [isSnackbarVisible, setIsSnackbarVisible] = useState(false)
@@ -135,49 +82,56 @@ const Journal = () => {
 
   return (
     <ScrollView style={styles.container}>
-      {fontsLoaded ? (
-        <>
-          <Text style={styles.title}>
-            {/* todo: actually calculate DQS */}
-            Nice! Your DQS score is{' '}
-            <Text style={{ color: '#00CA2C' }}>+31</Text>
-          </Text>
-
-          <BasicText style={styles.subtext}>
-            Keep up the good work! If you want to improve more, try cutting back
-            on{' '}
-            <Text style={{ fontWeight: 600, fontFamily: 'Inter_600SemiBold' }}>
-              table sugar
+      {!error ? (
+        fontsLoaded && data ? (
+          <>
+            <Text style={styles.title}>
+              {/* todo: actually calculate DQS */}
+              Nice! Your DQS score is{' '}
+              <Text style={{ color: '#00CA2C' }}>+31</Text>
             </Text>
-            .
-          </BasicText>
 
-          <Text style={styles.h2}>Let's break it down</Text>
+            <BasicText style={styles.subtext}>
+              Keep up the good work! If you want to improve more, try cutting
+              back on{' '}
+              <Text
+                style={{ fontWeight: 600, fontFamily: 'Inter_600SemiBold' }}
+              >
+                table sugar
+              </Text>
+              .
+            </BasicText>
 
-          <JournalOccasion
-            data={data}
-            handleOnButtonClick={handleOnButtonClick}
-            occasion="breakfast"
-          />
-          <JournalOccasion
-            data={data}
-            handleOnButtonClick={handleOnButtonClick}
-            occasion="lunch"
-          />
-          <JournalOccasion
-            data={data}
-            handleOnButtonClick={handleOnButtonClick}
-            occasion="dinner"
-          />
-          <JournalOccasion
-            data={data}
-            handleOnButtonClick={handleOnButtonClick}
-            isLast={true}
-            occasion="snacks"
-          />
-        </>
+            <Text style={styles.h2}>Let's break it down</Text>
+
+            <JournalOccasion
+              data={data}
+              handleOnButtonClick={handleOnButtonClick}
+              occasion="breakfast"
+            />
+            <JournalOccasion
+              data={data}
+              handleOnButtonClick={handleOnButtonClick}
+              occasion="lunch"
+            />
+            <JournalOccasion
+              data={data}
+              handleOnButtonClick={handleOnButtonClick}
+              occasion="dinner"
+            />
+            <JournalOccasion
+              data={data}
+              handleOnButtonClick={handleOnButtonClick}
+              isLast={true}
+              occasion="snacks"
+            />
+          </>
+        ) : (
+          <Text>Loading...</Text>
+          // todo: better error handling
+        )
       ) : (
-        <Text>Loading...</Text>
+        <>Error</>
       )}
 
       <Portal>

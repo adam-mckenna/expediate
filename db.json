@@ -1,0 +1,95 @@
+{
+    "journal": [
+        {
+            "id": "1",
+            "date": "29112024",
+            "breakfast": [
+                {
+                    "id": "1",
+                    "title": "Instant oats",
+                    "category": "whole-grains",
+                    "servings": 1,
+                    "score": 2
+                },
+                {
+                    "id": "2",
+                    "title": "Mango",
+                    "category": "fruit",
+                    "servings": 1,
+                    "score": 2
+                    
+                },
+                {
+                    "id": "3",
+                    "title": "Basil seeds",
+                    "category": "nuts-and-seeds",
+                    "servings": 1,
+                    "score": 2
+                    
+                },
+                {
+                    "id": "5",
+                    "title": "Soy milk (unsweetened)",
+                    "category": "dairy",
+                    "servings": 1,
+                    "score": 1
+                    
+                },
+                {
+                    "id": "6",
+                    "title": "Banana",
+                    "category": "fruit",
+                    "servings": 1,
+                    "score": 1
+                    
+                },
+                {
+                    "id": "7",
+                    "title": "Peanut butter",
+                    "category": "nuts-and-seeds",
+                    "servings": 1,
+                    "score": 1
+                    
+                }
+            ],
+            "lunch": [
+                {
+                    "id": "4",
+                    "title": "Table sugar",
+                    "category": "sweets",
+                    "servings": 1,
+                    "score": -1
+                    
+                },
+                {
+                    "id": "5",
+                    "title": "Banana bread",
+                    "category": "sweets",
+                    "servings": 1,
+                    "score": -1
+                    
+                }
+            ],
+            "dinner": [
+                {
+                    "id": "100",
+                    "title": "Sweet potato",
+                    "category": "vegetables",
+                    "servings": 1,
+                    "score": 2
+                    
+                }
+            ],
+            "snacks": [
+                {
+                    "id": "4000",
+                    "title": "Cocoa powder",
+                    "category": "undefined",
+                    "servings": 1,
+                    "score": 0
+                    
+                }
+            ]
+        }
+    ]
+}

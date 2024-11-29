@@ -6,65 +6,65 @@
       "breakfast": [
         {
           "title": "Instant oats",
-          "category": "whole-grains",
+          "category": "Whole Grains",
           "servings": 1,
           "score": 2
         },
         {
           "title": "Mango",
-          "category": "fruit",
+          "category": "Fruit",
           "servings": 1,
           "score": 2
         },
         {
           "title": "Basil seeds",
-          "category": "nuts-and-seeds",
+          "category": "Nuts and Seeds",
           "servings": 1,
           "score": 2
         },
         {
           "title": "Soy milk (unsweetened)",
-          "category": "dairy",
+          "category": "Dairy",
           "servings": 1,
           "score": 1
         },
         {
           "title": "Banana",
-          "category": "fruit",
+          "category": "Fruit",
           "servings": 1,
           "score": 1
         },
         {
           "title": "Peanut butter",
-          "category": "nuts-and-seeds",
+          "category": "Nuts and Seeds",
           "servings": 1,
           "score": 1
         },
         {
           "title": "Banana",
-          "category": "whole-grains",
+          "category": "Whole Grains",
           "servings": 1,
-          "score": -1
+          "score": 1
         },
         {
           "title": "Oats",
-          "category": "whole-grains",
+          "category": "Whole Grains",
           "servings": 1,
-          "score": -1
+          "score": 1
         }
       ],
       "lunch": [
         {
           "id": "4",
           "title": "Table sugar",
-          "category": "sweets",
+          "category": "Sweets",
           "servings": 1,
           "score": -1
         },
         {
           "id": "5",
           "title": "Banana bread",
-          "category": "sweets",
+          "category": "Sweets",
           "servings": 1,
           "score": -1
         }
@@ -73,7 +73,7 @@
         {
           "id": "100",
           "title": "Sweet potato",
-          "category": "vegetables",
+          "category": "Vegetables",
           "servings": 1,
           "score": 2
         }
@@ -82,7 +82,7 @@
         {
           "id": "4000",
           "title": "Cocoa powder",
-          "category": "undefined",
+          "category": "Other",
           "servings": 1,
           "score": 0
         }

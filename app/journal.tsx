@@ -41,7 +41,8 @@ const Journal = () => {
   const [data, setData] = useState<Data | null>()
   const [error, setError] = useState(null)
 
-  const today = format(new Date(), 'dMyyyy')
+  const today = '29112024'
+  // const today = format(new Date(), 'dMyyyy')
 
   useEffect(() => {
     const fetchData = async () => {
@@ -93,7 +94,7 @@ const Journal = () => {
       .map((item) => {
         const object: Food = {
           title: item,
-          category: 'whole-grains',
+          category: 'Whole Grains',
           servings: 1,
           score: -1,
         }
@@ -129,7 +130,7 @@ const Journal = () => {
       }
     }
 
-    setInput("");
+    setInput('')
 
     if (data) {
       const revisedData = data
@@ -150,7 +151,7 @@ const Journal = () => {
         fontsLoaded && data ? (
           <>
             <Text style={styles.title}>
-              {/* todo: actually calculate DQS */}
+              {/* todo: actually calculate DQS. Will this be done on the BE? */}
               Nice! Your DQS score is{' '}
               <Text style={{ color: '#00CA2C' }}>+31</Text>
             </Text>

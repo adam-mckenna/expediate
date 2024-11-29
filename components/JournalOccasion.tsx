@@ -1,12 +1,15 @@
+import { useRef, useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import { List } from 'react-native-paper'
+import { List, Button, Portal, Dialog, TextInput } from 'react-native-paper'
+import { PaperSelect } from 'react-native-paper-select'
 
 import { Data } from '@/app/journal'
-import { FoodCategory, Occasion } from '@/types/Types'
+import { Food, FoodCategory, Occasion } from '@/types/Types'
 
+import DotsIcon from './icons/Dots'
 import PlusIcon from './icons/Plus'
-import FruitIcon from './icons/Fruit'
 import SweetIcon from './icons/Sweet'
+import FruitIcon from './icons/Fruit'
 import WholeGrainIcon from './icons/WholeGrain'
 
 interface Props {
@@ -22,6 +25,32 @@ const JournalOccasion = ({
   occasion,
   isLast,
 }: Props) => {
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [editingData, setEditingData] = useState<Food | undefined>()
+
+  const [servingInput, setServingInput] = useState<number | undefined>()
+
+  const [categoryInput, setCategoryInput] = useState<any>({
+    value: '',
+    list: [
+      { _id: 'fruit', value: 'Fruit' },
+      { _id: 'vegetables', value: 'Vegetables' },
+      { _id: 'whole-grains', value: 'Whole Grains' },
+      { _id: 'lean-meat-or-fish', value: 'Lean Meat Or Fish' },
+      { _id: 'nuts-and-seeds', value: 'Nuts And Seeds' },
+      { _id: 'dairy', value: 'Dairy' },
+      { _id: 'refined-grains', value: 'Refined Grains' },
+      { _id: 'sweets', value: 'Sweets' },
+      { _id: 'fried-foods', value: 'Fried Foods' },
+      { _id: 'fatty-proteins', value: 'Fatty Proteins' },
+      { _id: 'other', value: 'Other' },
+    ],
+    selectedList: [],
+    error: '',
+  })
+
+  const singleSelectRef = useRef(null)
+
   const getOccasionTotalDQS = (occasion: Occasion) =>
     data[occasion].reduce((accumulator, { score }) => accumulator + score, 0)
 
@@ -49,17 +78,36 @@ const JournalOccasion = ({
   const getIcon = (category: FoodCategory) => {
     let icon = <></>
     switch (category) {
-      case 'fruit':
+      case 'Fruit':
         icon = <FruitIcon />
         break
-      case 'sweets':
+      case 'Sweets':
         icon = <SweetIcon />
         break
-      case 'whole-grains':
+      case 'Whole Grains':
         icon = <WholeGrainIcon />
         break
     }
     return icon
+  }
+
+  const handleOnItemButtonPress = (item: Food) => {
+    setIsEditDialogOpen(true)
+    setEditingData(item)
+    setServingInput(item.servings)
+    setCategoryInput({
+      ...categoryInput,
+      value: item.category,
+      selectedList: [
+        categoryInput.list.find(
+          (listItem: any) => listItem.value === item.category,
+        ),
+      ],
+    })
+  }
+
+  const dismissDialog = () => {
+    setIsEditDialogOpen(false)
   }
 
   return (
@@ -133,6 +181,16 @@ const JournalOccasion = ({
                   {getIcon(item.category)}
                 </View>
               )}
+              right={() => (
+                <View style={{ display: 'flex', justifyContent: 'center' }}>
+                  <Button
+                    mode="text"
+                    onPress={() => handleOnItemButtonPress(item)}
+                  >
+                    <DotsIcon />
+                  </Button>
+                </View>
+              )}
             />
           ))}
 
@@ -179,6 +237,61 @@ const JournalOccasion = ({
           />
         </View>
       </View>
+
+      <Portal>
+        <Dialog
+          visible={isEditDialogOpen}
+          onDismiss={dismissDialog}
+          style={{
+            backgroundColor: 'white',
+          }}
+        >
+          <Dialog.Title style={{ textTransform: 'capitalize' }}>
+            Edit <strong>{editingData?.title}</strong>
+          </Dialog.Title>
+          <Dialog.Content>
+            <Text>Servings</Text>
+            <TextInput
+              value={`${servingInput}`}
+              onChangeText={(e) => {
+                setServingInput(Number(e))
+              }}
+              error={Number(servingInput) < 1}
+              placeholder="Number of servings."
+            />
+
+            <PaperSelect
+              inputRef={singleSelectRef}
+              label="Select Gender"
+              value={categoryInput.value || ''}
+              onSelection={(value: any) => {
+                setCategoryInput({
+                  ...categoryInput,
+                  value: value.text,
+                  selectedList: value.selectedList,
+                  error: '',
+                })
+              }}
+              arrayList={[...categoryInput.list]}
+              selectedArrayList={[...categoryInput.selectedList]}
+              multiEnable={false}
+              hideSearchBox={true}
+              textInputMode="outlined"
+            />
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={dismissDialog}>Cancel</Button>
+            <Button
+              disabled={!servingInput && !categoryInput}
+              onPress={() => {}}
+              mode="contained"
+              style={{ paddingLeft: 8, paddingRight: 8, borderRadius: 6 }}
+            >
+              Done
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </View>
   )
 }
@@ -200,6 +313,8 @@ const styles = StyleSheet.create({
   },
   occasionData: {
     paddingBottom: 16,
+    paddingRight: 16,
+    width: '100%',
   },
   timeline: {
     marginRight: 12,

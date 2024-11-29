@@ -1,17 +1,17 @@
 export type Occasion = 'breakfast' | 'lunch' | 'dinner' | 'snacks'
 
 export type FoodCategory =
-  | 'fruit'
-  | 'vegetables'
-  | 'whole-grains'
-  | 'lean-meat-or-fish'
-  | 'nuts-and-seeds'
-  | 'dairy'
-  | 'refined-grains'
-  | 'sweets'
-  | 'fried-foods'
-  | 'fatty-proteins'
-  | 'undefined'
+  | 'Fruit'
+  | 'Vegetables'
+  | 'Whole Grains'
+  | 'Lean Meat Or Fish'
+  | 'Nuts And Seeds'
+  | 'Dairy'
+  | 'Refined Grains'
+  | 'Sweets'
+  | 'Fried Foods'
+  | 'Fatty Proteins'
+  | 'Other'
 
 export type Food = {
   title: string

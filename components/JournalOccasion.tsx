@@ -30,6 +30,7 @@ const JournalOccasion = ({
 
   const [servingInput, setServingInput] = useState<number | undefined>()
 
+  // todo: fix type
   const [categoryInput, setCategoryInput] = useState<any>({
     value: '',
     list: [
@@ -99,6 +100,7 @@ const JournalOccasion = ({
       ...categoryInput,
       value: item.category,
       selectedList: [
+        // todo: fix type
         categoryInput.list.find(
           (listItem: any) => listItem.value === item.category,
         ),
@@ -264,6 +266,7 @@ const JournalOccasion = ({
               inputRef={singleSelectRef}
               label="Select Gender"
               value={categoryInput.value || ''}
+              // todo: fix type
               onSelection={(value: any) => {
                 setCategoryInput({
                   ...categoryInput,

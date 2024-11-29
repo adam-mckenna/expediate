@@ -14,12 +14,14 @@ import {
   Inter_900Black,
 } from '@expo-google-fonts/inter'
 
-import { Food } from '@/types/Types'
+import { Food, Occasion } from '@/types/Types'
 
 import { BasicText } from '@/components/BasicText'
 import JournalOccasion from '@/components/JournalOccasion'
 
 export interface Data {
+  id: string
+  date: string
   breakfast: Array<Food>
   lunch: Array<Food>
   dinner: Array<Food>
@@ -39,11 +41,10 @@ const Journal = () => {
   const [data, setData] = useState<Data | null>()
   const [error, setError] = useState(null)
 
+  const today = format(new Date(), 'dMyyyy')
+
   useEffect(() => {
     const fetchData = async () => {
-      const today = format(new Date(), 'dMyyyy')
-      console.log(today)
-
       try {
         const response = await fetch(
           `http://localhost:3000/journal?date=${today}`,
@@ -53,7 +54,6 @@ const Journal = () => {
         }
         const result = await response.json()
         setData(result[0])
-        console.log(result[0])
       } catch (err) {
         // todo: fix type
         setError((err as any).message)
@@ -65,16 +65,80 @@ const Journal = () => {
 
   const [isDialogVisible, setIsDialogVisible] = useState(false)
   const [isSnackbarVisible, setIsSnackbarVisible] = useState(false)
+  const [activeOccasion, setActiveOccasion] = useState<Occasion | undefined>()
 
   const [input, setInput] = useState<string>()
 
-  const handleOnButtonClick = () => {
+  const handleOnButtonClick = (occasion: Occasion) => {
+    setActiveOccasion(occasion)
     setIsDialogVisible(true)
+  }
+
+  const dismissDialog = () => {
+    setIsDialogVisible(false)
+    setActiveOccasion(undefined)
   }
 
   const updateInput = (value: string) => {
     if (input !== value) {
       setInput(value)
+    }
+  }
+
+  // dummy method
+  const processFoodData = (food: string) => {
+    const items = food
+      .split(',')
+      .map((item) => item.trim())
+      .map((item) => {
+        const object: Food = {
+          title: item,
+          category: 'whole-grains',
+          servings: 1,
+          score: -1,
+        }
+        return object
+      })
+
+    return items
+  }
+
+  const updateData = () => {
+    const output = processFoodData(input || '')
+
+    const update = async (updatedData: Data) => {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/journal/${data?.id}`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedData),
+          },
+        )
+        if (!response.ok) {
+          throw new Error('Failed to fetch')
+        }
+        const result = await response.json()
+        setData(result)
+      } catch (err) {
+        // todo: fix type
+        setError((err as any).message)
+      }
+    }
+
+    setInput("");
+
+    if (data) {
+      const revisedData = data
+
+      output.forEach((item) => {
+        revisedData[activeOccasion || 'breakfast'].push(item)
+      })
+
+      update(revisedData)
     }
   }
 
@@ -127,17 +191,18 @@ const Journal = () => {
             />
           </>
         ) : (
+          // todo: better loading
           <Text>Loading...</Text>
-          // todo: better error handling
         )
       ) : (
+        // todo: better error handling
         <>Error</>
       )}
 
       <Portal>
         <Dialog
           visible={isDialogVisible}
-          onDismiss={handleOnButtonClick}
+          onDismiss={dismissDialog}
           style={{
             backgroundColor: 'white',
           }}
@@ -154,12 +219,14 @@ const Journal = () => {
             />
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={handleOnButtonClick}>Cancel</Button>
+            <Button onPress={dismissDialog}>Cancel</Button>
             <Button
+              disabled={!input}
               onPress={() => {
                 // todo: add logic to add item
                 setIsDialogVisible(false)
                 setIsSnackbarVisible(true)
+                updateData()
               }}
               mode="contained"
               style={{ paddingLeft: 8, paddingRight: 8, borderRadius: 6 }}

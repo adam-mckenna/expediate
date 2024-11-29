@@ -11,7 +11,7 @@ import WholeGrainIcon from './icons/WholeGrain'
 
 interface Props {
   data: Data
-  handleOnButtonClick: () => void
+  handleOnButtonClick: (occasion: Occasion) => void
   occasion: Occasion
   isLast?: boolean
 }
@@ -75,9 +75,9 @@ const JournalOccasion = ({
         </Text>
 
         <View>
-          {data[occasion].map((item) => (
+          {data[occasion].map((item, i) => (
             <List.Item
-              key={item.id}
+              key={i}
               title={
                 <Text style={{ display: 'flex', alignItems: 'flex-start' }}>
                   <Text>{item.title}</Text>
@@ -137,7 +137,7 @@ const JournalOccasion = ({
           ))}
 
           <List.Item
-            onPress={handleOnButtonClick}
+            onPress={() => handleOnButtonClick(occasion)}
             key="add more"
             title="Add new item"
             contentStyle={{

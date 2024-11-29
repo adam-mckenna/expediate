@@ -14,7 +14,6 @@ export type FoodCategory =
   | 'undefined'
 
 export type Food = {
-  id: string
   title: string
   category: FoodCategory
   servings: number

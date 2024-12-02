@@ -64,9 +64,8 @@ const JournalOccasion = ({
     return (
       <Text
         style={{
-          color: isPositive ? '#00CA2C' : '#F02835',
-          fontSize: 10,
-          lineHeight: 10,
+          ...styles.dqsScore,
+          ...(isPositive ? styles.positive : styles.negative),
         }}
       >
         {!isZero && isPositive ? '+' : ''}
@@ -110,6 +109,38 @@ const JournalOccasion = ({
 
   const dismissDialog = () => {
     setIsEditDialogOpen(false)
+  }
+
+  const updateData = () => {
+    const update = async (updatedData: Data) => {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/journal/${data?.id}`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedData),
+          },
+        )
+        if (!response.ok) {
+          throw new Error('Failed to fetch')
+        }
+        dismissDialog()
+      } catch (err) {
+        // todo: handle error
+      }
+    }
+
+    if (editingData) {
+      const index = data[occasion].indexOf(editingData)
+
+      let newData = data
+      newData[occasion][index].category = categoryInput.value
+
+      update(newData)
+    }
   }
 
   return (
@@ -286,7 +317,7 @@ const JournalOccasion = ({
             <Button onPress={dismissDialog}>Cancel</Button>
             <Button
               disabled={!servingInput && !categoryInput}
-              onPress={() => {}}
+              onPress={updateData}
               mode="contained"
               style={{ paddingLeft: 8, paddingRight: 8, borderRadius: 6 }}
             >
@@ -342,6 +373,16 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundImage:
       'linear-gradient(180deg, rgba(253,113,33,1) 0%, rgba(253,113,33,1) 42%, rgba(253,113,33,0.7035407913165266) 60%, rgba(255,255,255,0) 100%)',
+  },
+  dqsScore: {
+    fontSize: 10,
+    lineHeight: 10,
+  },
+  positive: {
+    color: '#00CA2C',
+  },
+  negative: {
+    color: '#F02835',
   },
 })
 

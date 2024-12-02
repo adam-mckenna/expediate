@@ -137,7 +137,11 @@ const JournalOccasion = ({
       const index = data[occasion].indexOf(editingData)
 
       let newData = data
-      newData[occasion][index].category = categoryInput.value
+      newData[occasion][index] = {
+        ...newData[occasion][index],
+        category: categoryInput.value,
+        servings: servingInput || 1,
+      }
 
       update(newData)
     }

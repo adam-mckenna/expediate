@@ -6,8 +6,8 @@
       "breakfast": [
         {
           "title": "Instant oats",
-          "category": "Fruit",
-          "servings": 1,
+          "category": "Whole Grains",
+          "servings": 2,
           "score": 2
         },
         {
@@ -19,7 +19,7 @@
         {
           "title": "Basil seeds",
           "category": "Nuts and Seeds",
-          "servings": 1,
+          "servings": 4,
           "score": 2
         },
         {

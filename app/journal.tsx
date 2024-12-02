@@ -14,21 +14,14 @@ import {
   Inter_900Black,
 } from '@expo-google-fonts/inter'
 
-import { Food, Occasion } from '@/types/Types'
+import { getJournal, updateJournal } from '@/api/journalService'
+
+import { Food, Journal, Occasion } from '@/types/Journal'
 
 import { BasicText } from '@/components/BasicText'
 import JournalOccasion from '@/components/JournalOccasion'
 
-export interface Data {
-  id: string
-  date: string
-  breakfast: Array<Food>
-  lunch: Array<Food>
-  dinner: Array<Food>
-  snacks: Array<Food>
-}
-
-const Journal = () => {
+const JournalPage = () => {
   let [fontsLoaded] = useFonts({
     Inter_200ExtraLight,
     Inter_300Light,
@@ -38,7 +31,7 @@ const Journal = () => {
     Inter_900Black,
   })
 
-  const [data, setData] = useState<Data | null>()
+  const [data, setData] = useState<Journal | null>()
   const [error, setError] = useState(null)
 
   const today = '29112024'
@@ -47,17 +40,13 @@ const Journal = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:3000/journal?date=${today}`,
-        )
-        if (!response.ok) {
-          throw new Error('Failed to fetch')
-        }
-        const result = await response.json()
-        setData(result[0])
-      } catch (err) {
-        // todo: fix type
-        setError((err as any).message)
+        const response = await (await getJournal(today)).json()
+        setData(response)
+      } catch (error) {
+        // todo: fix type and handle
+        setError((error as any).message)
+      } finally {
+        // todo: handle loading
       }
     }
 
@@ -86,47 +75,26 @@ const Journal = () => {
     }
   }
 
-  // dummy method
-  const processFoodData = (food: string) => {
-    const items = food
-      .split(',')
-      .map((item) => item.trim())
-      .map((item) => {
-        const object: Food = {
-          title: item,
-          category: 'Whole Grains',
-          servings: 1,
-          score: -1,
-        }
-        return object
-      })
-
-    return items
-  }
+  // Dummy placeholder method:
+  // the API will handle this by taking the string, parsing it, assigning DQS, etc.
+  const processFoodData = (food: string): Array<Food> =>
+    food.split(',').map((title) => ({
+      title: title.trim(),
+      category: 'Whole Grains',
+      servings: 1,
+      score: -1,
+    }))
 
   const updateData = () => {
     const output = processFoodData(input || '')
 
-    const update = async (updatedData: Data) => {
+    const update = async (updatedData: Journal) => {
       try {
-        const response = await fetch(
-          `http://localhost:3000/journal/${data?.id}`,
-          {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(updatedData),
-          },
-        )
-        if (!response.ok) {
-          throw new Error('Failed to fetch')
-        }
-        const result = await response.json()
-        setData(result)
-      } catch (err) {
-        // todo: fix type
-        setError((err as any).message)
+        await updateJournal(data?.id || '', updatedData)
+      } catch (error) {
+        // todo: handle error
+      } finally {
+        // todo: handle loading
       }
     }
 
@@ -134,11 +102,9 @@ const Journal = () => {
 
     if (data) {
       const revisedData = data
-
       output.forEach((item) => {
         revisedData[activeOccasion || 'breakfast'].push(item)
       })
-
       update(revisedData)
     }
   }
@@ -245,6 +211,7 @@ const Journal = () => {
             onPress: dismissSnackbar,
           }}
         >
+          {/* todo: populate with real data */}
           "Instant oats" added
         </Snackbar>
       </Portal>
@@ -305,4 +272,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default Journal
+export default JournalPage

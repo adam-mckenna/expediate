@@ -1,8 +1,7 @@
 {
   "journal": [
     {
-      "id": "1",
-      "date": "29112024",
+      "id": "29112024",
       "breakfast": [
         {
           "title": "Instant oats",
@@ -51,6 +50,24 @@
           "category": "Whole Grains",
           "servings": 1,
           "score": 1
+        },
+        {
+          "title": "apple",
+          "category": "Fruit",
+          "servings": 2,
+          "score": -1
+        },
+        {
+          "title": "corn",
+          "category": "Whole Grains",
+          "servings": 1,
+          "score": -1
+        },
+        {
+          "title": "Score",
+          "category": "Whole Grains",
+          "servings": 1,
+          "score": -1
         }
       ],
       "lunch": [

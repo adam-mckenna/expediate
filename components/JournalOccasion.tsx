@@ -3,8 +3,9 @@ import { StyleSheet, Text, View } from 'react-native'
 import { List, Button, Portal, Dialog, TextInput } from 'react-native-paper'
 import { PaperSelect } from 'react-native-paper-select'
 
-import { Data } from '@/app/journal'
-import { Food, FoodCategory, Occasion } from '@/types/Types'
+import { updateJournal } from '@/api/journalService'
+
+import { Journal, Food, FoodCategory, Occasion } from '@/types/Journal'
 
 import DotsIcon from './icons/Dots'
 import PlusIcon from './icons/Plus'
@@ -13,7 +14,7 @@ import FruitIcon from './icons/Fruit'
 import WholeGrainIcon from './icons/WholeGrain'
 
 interface Props {
-  data: Data
+  data: Journal
   handleOnButtonClick: (occasion: Occasion) => void
   occasion: Occasion
   isLast?: boolean
@@ -112,24 +113,14 @@ const JournalOccasion = ({
   }
 
   const updateData = () => {
-    const update = async (updatedData: Data) => {
+    const update = async (updatedData: Journal) => {
       try {
-        const response = await fetch(
-          `http://localhost:3000/journal/${data?.id}`,
-          {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(updatedData),
-          },
-        )
-        if (!response.ok) {
-          throw new Error('Failed to fetch')
-        }
-        dismissDialog()
-      } catch (err) {
+        await updateJournal(data?.id || '', updatedData)
+      } catch (error) {
         // todo: handle error
+      } finally {
+        // todo: handle loading
+        dismissDialog()
       }
     }
 
@@ -165,7 +156,9 @@ const JournalOccasion = ({
               key={i}
               title={
                 <Text style={{ display: 'flex', alignItems: 'flex-start' }}>
-                  <Text>{item.title}</Text>
+                  <Text style={{ textTransform: 'capitalize' }}>
+                    {item.title}
+                  </Text>
                   {
                     <Text
                       style={{

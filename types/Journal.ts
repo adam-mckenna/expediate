@@ -19,3 +19,11 @@ export type Food = {
   servings: number
   score: number
 }
+
+export interface Journal {
+  id: string
+  breakfast: Array<Food>
+  lunch: Array<Food>
+  dinner: Array<Food>
+  snacks: Array<Food>
+}

@@ -22,6 +22,8 @@ export type Food = {
 
 export interface Journal {
   id: string
+  dqs: number
+  message: string
   breakfast: Array<Food>
   lunch: Array<Food>
   dinner: Array<Food>

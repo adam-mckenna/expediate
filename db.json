@@ -2,6 +2,8 @@
   "journal": [
     {
       "id": "29112024",
+      "dqs": 31,
+      "message": "Keep up the good work! If you want to improve more, try cutting back on <strong>table sugar</strong>",
       "breakfast": [
         {
           "title": "Instant oats",
@@ -50,24 +52,6 @@
           "category": "Whole Grains",
           "servings": 1,
           "score": 1
-        },
-        {
-          "title": "apple",
-          "category": "Fruit",
-          "servings": 2,
-          "score": -1
-        },
-        {
-          "title": "corn",
-          "category": "Whole Grains",
-          "servings": 1,
-          "score": -1
-        },
-        {
-          "title": "Score",
-          "category": "Whole Grains",
-          "servings": 1,
-          "score": -1
         }
       ],
       "lunch": [

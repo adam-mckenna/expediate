@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ScrollView, StyleSheet, Text, TextInput } from 'react-native'
 import { Portal, Dialog, Button, Snackbar } from 'react-native-paper'
+import HTML from 'react-native-render-html'
 
 import { format } from 'date-fns'
 
@@ -21,6 +22,18 @@ import { Food, Journal, Occasion } from '@/types/Journal'
 import { BasicText } from '@/components/BasicText'
 import JournalOccasion from '@/components/JournalOccasion'
 
+const Occasions: Array<Occasion> = ['breakfast', 'lunch', 'dinner', 'snacks']
+
+// Dummy placeholder method:
+// the API will handle this by taking the string, parsing it, assigning DQS, etc.
+const processFoodData = (food: string): Array<Food> =>
+  food.split(',').map((title) => ({
+    title: title.trim(),
+    category: 'Whole Grains',
+    servings: 1,
+    score: -1,
+  }))
+
 const JournalPage = () => {
   let [fontsLoaded] = useFonts({
     Inter_200ExtraLight,
@@ -31,17 +44,18 @@ const JournalPage = () => {
     Inter_900Black,
   })
 
-  const [data, setData] = useState<Journal | null>()
-  const [error, setError] = useState(null)
-
   const today = '29112024'
   // const today = format(new Date(), 'dMyyyy')
+
+  const [journal, setJournal] = useState<Journal | null>()
+
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await (await getJournal(today)).json()
-        setData(response)
+        setJournal(response)
       } catch (error) {
         // todo: fix type and handle
         setError((error as any).message)
@@ -54,43 +68,53 @@ const JournalPage = () => {
   }, [])
 
   const [isDialogVisible, setIsDialogVisible] = useState(false)
-  const [isSnackbarVisible, setIsSnackbarVisible] = useState(false)
-  const [activeOccasion, setActiveOccasion] = useState<Occasion | undefined>()
 
-  const [input, setInput] = useState<string>()
-
-  const handleOnButtonClick = (occasion: Occasion) => {
-    setActiveOccasion(occasion)
-    setIsDialogVisible(true)
-  }
-
-  const dismissDialog = () => {
+  const onDialogDismiss = () => {
     setIsDialogVisible(false)
-    setActiveOccasion(undefined)
   }
 
-  const updateInput = (value: string) => {
-    if (input !== value) {
-      setInput(value)
+  const onDialogSubmit = () => {
+    // todo: add logic to add item
+    setIsDialogVisible(false)
+    setIsSnackbarVisible(true)
+    addNewEntriesToJournal()
+  }
+
+  const [isSnackbarVisible, setIsSnackbarVisible] = useState(false)
+
+  const dismissSnackbar = () => {
+    setIsSnackbarVisible(false)
+    setNewJournalEntries(undefined)
+  }
+
+  const [newJournalEntries, setNewJournalEntries] = useState<
+    | {
+        entry: string
+        occasion: Occasion
+      }
+    | undefined
+  >()
+
+  const updateNewJournalEntry = (value: string) => {
+    if (newJournalEntries?.entry !== value) {
+      setNewJournalEntries({
+        ...(newJournalEntries || { occasion: 'breakfast' }),
+        entry: value,
+      })
     }
   }
 
-  // Dummy placeholder method:
-  // the API will handle this by taking the string, parsing it, assigning DQS, etc.
-  const processFoodData = (food: string): Array<Food> =>
-    food.split(',').map((title) => ({
-      title: title.trim(),
-      category: 'Whole Grains',
-      servings: 1,
-      score: -1,
-    }))
+  const handleOnAddNewItemClick = (occasion: Occasion) => {
+    setIsDialogVisible(true)
+    setNewJournalEntries({ entry: '', occasion })
+  }
 
-  const updateData = () => {
-    const output = processFoodData(input || '')
+  const addNewEntriesToJournal = () => {
+    const output = processFoodData(newJournalEntries?.entry || '')
 
     const update = async (updatedData: Journal) => {
       try {
-        await updateJournal(data?.id || '', updatedData)
+        await updateJournal(journal?.id || '', updatedData)
       } catch (error) {
         // todo: handle error
       } finally {
@@ -98,64 +122,44 @@ const JournalPage = () => {
       }
     }
 
-    setInput('')
-
-    if (data) {
-      const revisedData = data
+    if (journal) {
+      const revisedData = journal
       output.forEach((item) => {
-        revisedData[activeOccasion || 'breakfast'].push(item)
+        revisedData[newJournalEntries?.occasion || 'breakfast'].push(item)
       })
       update(revisedData)
     }
   }
 
-  const dismissSnackbar = () => setIsSnackbarVisible(false)
+  const hasPositiveDQS = journal ? journal.dqs >= 0 : false
 
   return (
     <ScrollView style={styles.container}>
       {!error ? (
-        fontsLoaded && data ? (
+        fontsLoaded && journal ? (
           <>
             <Text style={styles.title}>
-              {/* todo: actually calculate DQS. Will this be done on the BE? */}
-              Nice! Your DQS score is{' '}
-              <Text style={{ color: '#00CA2C' }}>+31</Text>
+              {hasPositiveDQS ? 'Nice!' : 'Oh no!'} Your DQS score is&nbsp;
+              <Text style={hasPositiveDQS ? styles.positive : styles.negative}>
+                {hasPositiveDQS ? '+' : '-'}
+                {journal.dqs}
+              </Text>
+              .
             </Text>
 
             <BasicText style={styles.subtext}>
-              Keep up the good work! If you want to improve more, try cutting
-              back on{' '}
-              <Text
-                style={{ fontWeight: 600, fontFamily: 'Inter_600SemiBold' }}
-              >
-                table sugar
-              </Text>
-              .
+              <HTML source={{ html: journal.message }} />
             </BasicText>
 
             <Text style={styles.h2}>Let's break it down</Text>
 
-            <JournalOccasion
-              data={data}
-              handleOnButtonClick={handleOnButtonClick}
-              occasion="breakfast"
-            />
-            <JournalOccasion
-              data={data}
-              handleOnButtonClick={handleOnButtonClick}
-              occasion="lunch"
-            />
-            <JournalOccasion
-              data={data}
-              handleOnButtonClick={handleOnButtonClick}
-              occasion="dinner"
-            />
-            <JournalOccasion
-              data={data}
-              handleOnButtonClick={handleOnButtonClick}
-              isLast={true}
-              occasion="snacks"
-            />
+            {Occasions.map((occasion) => (
+              <JournalOccasion
+                data={journal}
+                handleOnButtonClick={handleOnAddNewItemClick}
+                occasion={occasion}
+              />
+            ))}
           </>
         ) : (
           // todo: better loading
@@ -163,40 +167,35 @@ const JournalPage = () => {
         )
       ) : (
         // todo: better error handling
-        <>Error</>
+        <>{error}</>
       )}
 
       <Portal>
         <Dialog
           visible={isDialogVisible}
-          onDismiss={dismissDialog}
-          style={{
-            backgroundColor: 'white',
-          }}
+          onDismiss={onDialogDismiss}
+          style={styles.dialog}
         >
           <Dialog.Title>Add new item</Dialog.Title>
+
           <Dialog.Content>
             <TextInput
-              value={input}
-              onChangeText={updateInput}
+              value={newJournalEntries?.entry}
+              onChangeText={updateNewJournalEntry}
               multiline={true}
               numberOfLines={8}
-              style={input ? styles.textarea : styles.placeholder}
+              style={newJournalEntries ? styles.textarea : styles.placeholder}
               placeholder="Breakfast: 2 apples, 14 bananas, 1 serving oats..."
             />
           </Dialog.Content>
+
           <Dialog.Actions>
-            <Button onPress={dismissDialog}>Cancel</Button>
+            <Button onPress={onDialogDismiss}>Cancel</Button>
             <Button
-              disabled={!input}
-              onPress={() => {
-                // todo: add logic to add item
-                setIsDialogVisible(false)
-                setIsSnackbarVisible(true)
-                updateData()
-              }}
+              disabled={!newJournalEntries}
+              onPress={onDialogSubmit}
               mode="contained"
-              style={{ paddingLeft: 8, paddingRight: 8, borderRadius: 6 }}
+              style={styles.dialogSubmit}
             >
               Done
             </Button>
@@ -211,8 +210,9 @@ const JournalPage = () => {
             onPress: dismissSnackbar,
           }}
         >
-          {/* todo: populate with real data */}
-          "Instant oats" added
+          <Text style={styles.snackbarText}>
+            "{newJournalEntries?.entry}" added
+          </Text>
         </Snackbar>
       </Portal>
     </ScrollView>
@@ -242,6 +242,10 @@ const styles = StyleSheet.create({
     paddingTop: 24,
     backgroundColor: 'white',
   },
+  dialog: {
+    backgroundColor: 'white',
+  },
+  dialogSubmit: { paddingLeft: 8, paddingRight: 8, borderRadius: 6 },
   title: {
     fontFamily: 'Inter_900Black',
     fontSize: 24,
@@ -269,6 +273,15 @@ const styles = StyleSheet.create({
     color: 'rgba(118, 118, 118, 0.5)',
     fontWeight: 200,
     fontFamily: 'Inter_200ExtraLight',
+  },
+  positive: {
+    color: '#00CA2C',
+  },
+  negative: {
+    color: '#F02835',
+  },
+  snackbarText: {
+    color: 'white',
   },
 })
 

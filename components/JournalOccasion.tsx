@@ -131,7 +131,7 @@ const JournalOccasion = ({
         <View style={isLast ? styles.lastLine : styles.line}></View>
       </View>
 
-      <View style={!isLast ? styles.occasionData : null}>
+      <View style={styles.occasionData}>
         <Text style={styles.h3}>
           {occasion} {getOccasionTotalString()}
         </Text>
@@ -176,6 +176,7 @@ const JournalOccasion = ({
               right={() => (
                 <View style={styles.listItemViewMore}>
                   <Button
+                    style={styles.listItemViewMoreButton}
                     mode="text"
                     onPress={() => handleOnItemButtonPress(food)}
                   >
@@ -327,7 +328,9 @@ const styles = StyleSheet.create({
     color: '#F02835',
   },
   listItem: {
-    padding: 0,
+    paddingRight: 0,
+    paddingTop: 0,
+    paddingBottom: 0,
   },
   listItemTitleText: {
     fontSize: 14,
@@ -344,10 +347,10 @@ const styles = StyleSheet.create({
     letterSpacing: -0.6,
   },
   listItemAddNewIconWrapper: {
-    width: 24,
-    height: 24,
-    marginLeft: 4,
-    marginRight: 4,
+    width: 28,
+    height: 28,
+    marginLeft: 5,
+    marginRight: 5,
     borderRadius: 6,
     alignItems: 'center',
     justifyContent: 'center',
@@ -370,15 +373,22 @@ const styles = StyleSheet.create({
   },
   listItemContent: {
     paddingLeft: 8,
+    maxHeight: 38,
   },
   listItemIconWrapper: {
-    width: 32,
-    height: 32,
+    width: 38,
+    height: 38,
     borderRadius: 6,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  listItemViewMore: { display: 'flex', justifyContent: 'center' },
+  listItemViewMore: {
+    display: 'flex',
+    justifyContent: 'center',
+    height: 38,
+    width: 38,
+  },
+  listItemViewMoreButton: { minWidth: 38 },
   editDialog: {
     backgroundColor: 'white',
   },

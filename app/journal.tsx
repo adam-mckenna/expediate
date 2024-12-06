@@ -197,6 +197,7 @@ const JournalPage = () => {
                 updateFoodEntry={updateFoodEntry}
                 handleOnButtonClick={handleOnAddNewItemClick}
                 occasion={occasion}
+                isLast={i === Occasions.length - 1}
               />
             ))}
           </>

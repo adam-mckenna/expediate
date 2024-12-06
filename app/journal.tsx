@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { ScrollView, StyleSheet, Text, TextInput } from 'react-native'
 import { Portal, Dialog, Button, Snackbar } from 'react-native-paper'
 import HTML from 'react-native-render-html'
+import { useLocalSearchParams } from 'expo-router'
 
 import { format } from 'date-fns'
 
@@ -44,8 +45,15 @@ const JournalPage = () => {
     Inter_900Black,
   })
 
-  const today = '29112024'
-  // const today = format(new Date(), 'dMyyyy')
+  const searchParams = useLocalSearchParams()
+
+  const getToday = () => {
+    const date = searchParams.date as string
+    const day = parseInt(date.slice(0, 2))
+    const month = parseInt(date.slice(2, 4))
+    const year = parseInt(date.slice(-4))
+    return format(new Date(year, month - 1, day), 'ddMyyyy')
+  }
 
   const [journal, setJournal] = useState<Journal | null>()
 
@@ -54,7 +62,7 @@ const JournalPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await (await getJournal(today)).json()
+        const response = await (await getJournal(getToday())).json()
         setJournal(response)
       } catch (error) {
         // todo: fix type and handle
@@ -153,8 +161,9 @@ const JournalPage = () => {
 
             <Text style={styles.h2}>Let's break it down</Text>
 
-            {Occasions.map((occasion) => (
+            {Occasions.map((occasion, i) => (
               <JournalOccasion
+                key={i}
                 data={journal}
                 handleOnButtonClick={handleOnAddNewItemClick}
                 occasion={occasion}

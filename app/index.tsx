@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { StyleSheet, Text, TextInput, View } from 'react-native'
 import { Button } from 'react-native-elements'
 import { router } from 'expo-router'
@@ -11,7 +11,11 @@ import {
   Inter_900Black,
 } from '@expo-google-fonts/inter'
 
+import { format } from 'date-fns'
+
 import { BasicText } from '@/components/BasicText'
+import { createJournal, listJournal } from '@/api/journalService'
+import { Journal } from '@/types/Journal'
 
 const Index = () => {
   let [fontsLoaded] = useFonts({
@@ -21,19 +25,42 @@ const Index = () => {
     Inter_900Black,
   })
 
-  const [input, setInput] = useState<string>()
+  const today = format(new Date(), 'ddMyyyy')
 
-  const updateInput = (value: string) => {
-    if (input !== value) {
-      setInput(value)
+  useEffect(() => {
+    const checkIfHasData = async () => {
+      try {
+        const response = await listJournal()
+        const journals = await response.json()
+        const hasJournal = journals.find(({ id }: Journal) => id === today)
+        if (hasJournal) {
+          router.push(`/journal?date=${hasJournal.id}`)
+        }
+      } catch (error) {
+        // todo: handle error
+      }
+    }
+
+    checkIfHasData()
+  }, [])
+
+  const [foodConsumed, setFoodConsumed] = useState<string>()
+
+  const updateInput = (userInput: string) => {
+    if (foodConsumed !== userInput) {
+      setFoodConsumed(userInput)
     }
   }
 
-  const handleOnButtonPress = () => {
-    if (input) {
-      // todo: add logic to parse data and send to BE.
-
-      router.push('/journal')
+  const handleOnButtonPress = async () => {
+    if (foodConsumed) {
+      try {
+        await createJournal(today, foodConsumed)
+      } catch (error) {
+        // todo: handle error
+      } finally {
+        router.push(`/journal?date=${today}`)
+      }
     }
   }
 
@@ -49,11 +76,11 @@ const Index = () => {
           </BasicText>
           {/* todo: add error if form empty */}
           <TextInput
-            value={input}
+            value={foodConsumed}
             onChangeText={updateInput}
             multiline={true}
             numberOfLines={8}
-            style={input ? styles.textarea : styles.placeholder}
+            style={foodConsumed ? styles.textarea : styles.placeholder}
             placeholder="Breakfast: 2 apples, 14 bananas, 1 serving oats..."
           />
           <View style={styles.buttonWrapper}>
@@ -67,6 +94,7 @@ const Index = () => {
           </View>
         </>
       ) : (
+        // Todo: better loading
         <Text>Loading...</Text>
       )}
     </View>

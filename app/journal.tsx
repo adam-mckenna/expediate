@@ -18,7 +18,7 @@ import {
 
 import { getJournal, updateJournal } from '@/api/journalService'
 
-import { Food, Journal, Occasion } from '@/types/Journal'
+import { Food, FoodCategory, Journal, Occasion } from '@/types/Journal'
 
 import { BasicText } from '@/components/BasicText'
 import JournalOccasion from '@/components/JournalOccasion'
@@ -28,8 +28,8 @@ const Occasions: Array<Occasion> = ['breakfast', 'lunch', 'dinner', 'snacks']
 // Dummy placeholder method:
 // the API will handle this by taking the string, parsing it, assigning DQS, etc.
 const processFoodData = (food: string): Array<Food> =>
-  food.split(',').map((title) => ({
-    title: title.trim(),
+  food.split(',').map((name) => ({
+    name: name.trim(),
     category: 'Whole Grains',
     servings: 1,
     score: -1,
@@ -82,7 +82,6 @@ const JournalPage = () => {
   }
 
   const onDialogSubmit = () => {
-    // todo: add logic to add item
     setIsDialogVisible(false)
     setIsSnackbarVisible(true)
     addNewEntriesToJournal()
@@ -139,6 +138,36 @@ const JournalPage = () => {
     }
   }
 
+  const updateFoodEntry = async (
+    occasion: Occasion,
+    data: Food | undefined,
+    category: FoodCategory,
+    servings: number,
+  ) => {
+    const update = async (updatedData: Journal) => {
+      try {
+        await updateJournal(journal?.id || '', updatedData)
+      } catch (error) {
+        // todo: handle error
+      } finally {
+        // todo: handle loading
+      }
+    }
+
+    if (data && journal) {
+      const index = journal[occasion].indexOf(data) as number
+
+      let newData = journal
+      newData[occasion][index] = {
+        ...newData[occasion][index],
+        category: category,
+        servings: servings || 1,
+      }
+
+      update(newData)
+    }
+  }
+
   const hasPositiveDQS = journal ? journal.dqs >= 0 : false
 
   return (
@@ -164,7 +193,8 @@ const JournalPage = () => {
             {Occasions.map((occasion, i) => (
               <JournalOccasion
                 key={i}
-                data={journal}
+                foods={journal[occasion]}
+                updateFoodEntry={updateFoodEntry}
                 handleOnButtonClick={handleOnAddNewItemClick}
                 occasion={occasion}
               />

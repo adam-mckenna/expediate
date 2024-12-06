@@ -14,7 +14,7 @@ export type FoodCategory =
   | 'Other'
 
 export type Food = {
-  title: string
+  name: string
   category: FoodCategory
   servings: number
   score: number

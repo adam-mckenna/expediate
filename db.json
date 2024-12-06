@@ -6,49 +6,49 @@
       "message": "Keep up the good work! If you want to improve more, try cutting back on <strong>table sugar</strong>",
       "breakfast": [
         {
-          "title": "Instant oats",
+          "name": "Instant oats",
           "category": "Whole Grains",
           "servings": 2,
           "score": 2
         },
         {
-          "title": "Mango",
+          "name": "Mango",
           "category": "Fruit",
           "servings": 1,
           "score": 2
         },
         {
-          "title": "Basil seeds",
+          "name": "Basil seeds",
           "category": "Nuts and Seeds",
           "servings": 4,
           "score": 2
         },
         {
-          "title": "Soy milk (unsweetened)",
+          "name": "Soy milk (unsweetened)",
           "category": "Dairy",
           "servings": 1,
           "score": 1
         },
         {
-          "title": "Banana",
+          "name": "Banana",
           "category": "Nuts And Seeds",
           "servings": 1,
           "score": 1
         },
         {
-          "title": "Peanut butter",
+          "name": "Peanut butter",
           "category": "Nuts and Seeds",
           "servings": 1,
           "score": 1
         },
         {
-          "title": "Banana",
+          "name": "Banana",
           "category": "Whole Grains",
           "servings": 1,
           "score": 1
         },
         {
-          "title": "Oats",
+          "name": "Oats",
           "category": "Whole Grains",
           "servings": 1,
           "score": 1
@@ -57,14 +57,14 @@
       "lunch": [
         {
           "id": "4",
-          "title": "Table sugar",
+          "name": "Table sugar",
           "category": "Sweets",
           "servings": 1,
           "score": -1
         },
         {
           "id": "5",
-          "title": "Banana bread",
+          "name": "Banana bread",
           "category": "Sweets",
           "servings": 1,
           "score": -1
@@ -73,7 +73,7 @@
       "dinner": [
         {
           "id": "100",
-          "title": "Sweet potato",
+          "name": "Sweet potato",
           "category": "Vegetables",
           "servings": 1,
           "score": 2
@@ -82,7 +82,7 @@
       "snacks": [
         {
           "id": "4000",
-          "title": "Cocoa powder",
+          "name": "Cocoa powder",
           "category": "Other",
           "servings": 1,
           "score": 0
@@ -95,49 +95,49 @@
       "message": "Keep up the good work! If you want to improve more, try cutting back on <strong>table sugar</strong>",
       "breakfast": [
         {
-          "title": "Instant oats",
-          "category": "Whole Grains",
-          "servings": 2,
+          "name": "Instant oats",
+          "category": "Lean Meat Or Fish",
+          "servings": 1,
           "score": 2
         },
         {
-          "title": "Mango",
+          "name": "Mango",
           "category": "Fruit",
           "servings": 1,
           "score": 2
         },
         {
-          "title": "Basil seeds",
-          "category": "Nuts and Seeds",
+          "name": "Basil seeds",
+          "category": "Sweets",
           "servings": 4,
           "score": 2
         },
         {
-          "title": "Soy milk (unsweetened)",
-          "category": "Dairy",
-          "servings": 1,
-          "score": 1
-        },
-        {
-          "title": "Banana",
-          "category": "Nuts And Seeds",
-          "servings": 1,
-          "score": 1
-        },
-        {
-          "title": "Peanut butter",
-          "category": "Nuts and Seeds",
-          "servings": 1,
-          "score": 1
-        },
-        {
-          "title": "Banana",
+          "name": "Soy milk (unsweetened)",
           "category": "Whole Grains",
           "servings": 1,
           "score": 1
         },
         {
-          "title": "Oats",
+          "name": "Banana",
+          "category": "Nuts And Seeds",
+          "servings": 1,
+          "score": 1
+        },
+        {
+          "name": "Peanut butter",
+          "category": "Nuts and Seeds",
+          "servings": 1,
+          "score": 1
+        },
+        {
+          "name": "Banana",
+          "category": "Fruit",
+          "servings": 2,
+          "score": 1
+        },
+        {
+          "name": "Oats",
           "category": "Whole Grains",
           "servings": 1,
           "score": 1
@@ -146,14 +146,14 @@
       "lunch": [
         {
           "id": "4",
-          "title": "Table sugar",
+          "name": "Table sugar",
           "category": "Sweets",
           "servings": 1,
           "score": -1
         },
         {
           "id": "5",
-          "title": "Banana bread",
+          "name": "Banana bread",
           "category": "Sweets",
           "servings": 1,
           "score": -1
@@ -162,7 +162,7 @@
       "dinner": [
         {
           "id": "100",
-          "title": "Sweet potato",
+          "name": "Sweet potato",
           "category": "Vegetables",
           "servings": 1,
           "score": 2
@@ -171,7 +171,7 @@
       "snacks": [
         {
           "id": "4000",
-          "title": "Cocoa powder",
+          "name": "Cocoa powder",
           "category": "Other",
           "servings": 1,
           "score": 0

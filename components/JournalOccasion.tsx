@@ -2,10 +2,9 @@ import { useRef, useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { List, Button, Portal, Dialog, TextInput } from 'react-native-paper'
 import { PaperSelect } from 'react-native-paper-select'
+import { ListItem } from 'react-native-paper-select/lib/typescript/interface/paperSelect.interface'
 
-import { updateJournal } from '@/api/journalService'
-
-import { Journal, Food, FoodCategory, Occasion } from '@/types/Journal'
+import { Food, FoodCategory, Occasion } from '@/types/Journal'
 
 import DotsIcon from './icons/Dots'
 import PlusIcon from './icons/Plus'
@@ -14,25 +13,39 @@ import FruitIcon from './icons/Fruit'
 import WholeGrainIcon from './icons/WholeGrain'
 
 interface Props {
-  data: Journal
-  handleOnButtonClick: (occasion: Occasion) => void
   occasion: Occasion
+  foods: Array<Food>
+  handleOnButtonClick: (occasion: Occasion) => void
   isLast?: boolean
+  updateFoodEntry: (
+    Occasion: Occasion,
+    data: Food | undefined,
+    category: FoodCategory,
+    servings: number,
+  ) => void
+}
+
+type CategoryInput = {
+  value: FoodCategory | ''
+  list: Array<ListItem>
+  selectedList: Array<ListItem>
+  error: string
 }
 
 const JournalOccasion = ({
-  data,
+  foods,
   handleOnButtonClick,
   occasion,
   isLast,
+  updateFoodEntry,
 }: Props) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+
   const [editingData, setEditingData] = useState<Food | undefined>()
 
   const [servingInput, setServingInput] = useState<number | undefined>()
 
-  // todo: fix type
-  const [categoryInput, setCategoryInput] = useState<any>({
+  const [categoryInput, setCategoryInput] = useState<CategoryInput>({
     value: '',
     list: [
       { _id: 'fruit', value: 'Fruit' },
@@ -53,11 +66,11 @@ const JournalOccasion = ({
 
   const singleSelectRef = useRef(null)
 
-  const getOccasionTotalDQS = (occasion: Occasion) =>
-    data[occasion].reduce((accumulator, { score }) => accumulator + score, 0)
+  const getOccasionTotalDQS = () =>
+    foods.reduce((accumulator, { score }) => accumulator + score, 0)
 
-  const getOccasionTotalString = (occasion: Occasion) => {
-    const score = getOccasionTotalDQS(occasion)
+  const getOccasionTotalString = () => {
+    const score = getOccasionTotalDQS()
     const isPositive = score >= 0
     const isZero = score === 0
 
@@ -100,42 +113,15 @@ const JournalOccasion = ({
       ...categoryInput,
       value: item.category,
       selectedList: [
-        // todo: fix type
         categoryInput.list.find(
-          (listItem: any) => listItem.value === item.category,
-        ),
+          (listItem: ListItem) => listItem.value === item.category,
+        ) || { _id: 'fruit', value: 'Fruit' },
       ],
     })
   }
 
   const dismissDialog = () => {
     setIsEditDialogOpen(false)
-  }
-
-  const updateData = () => {
-    const update = async (updatedData: Journal) => {
-      try {
-        await updateJournal(data?.id || '', updatedData)
-      } catch (error) {
-        // todo: handle error
-      } finally {
-        // todo: handle loading
-        dismissDialog()
-      }
-    }
-
-    if (editingData) {
-      const index = data[occasion].indexOf(editingData)
-
-      let newData = data
-      newData[occasion][index] = {
-        ...newData[occasion][index],
-        category: categoryInput.value,
-        servings: servingInput || 1,
-      }
-
-      update(newData)
-    }
   }
 
   return (
@@ -147,75 +133,51 @@ const JournalOccasion = ({
 
       <View style={!isLast ? styles.occasionData : null}>
         <Text style={styles.h3}>
-          {occasion} {getOccasionTotalString(occasion)}
+          {occasion} {getOccasionTotalString()}
         </Text>
 
         <View>
-          {data[occasion].map((item, i) => (
+          {foods.map((food, i) => (
             <List.Item
               key={i}
               title={
-                <Text style={{ display: 'flex', alignItems: 'flex-start' }}>
-                  <Text style={{ textTransform: 'capitalize' }}>
-                    {item.title}
+                <Text style={styles.listItemTitle}>
+                  <Text style={styles.listItemTitleTextInner}>{food.name}</Text>
+
+                  <Text
+                    style={{
+                      ...styles.listItemTitleScore,
+                      ...(food.score >= 0 ? styles.positive : styles.negative),
+                    }}
+                  >
+                    {/* todo: add chevron */}
+                    {food.score > 0 ? '+' : ''}
+                    {food.score}
                   </Text>
-                  {
-                    <Text
-                      style={{
-                        color: item.score >= 0 ? '#00CA2C' : '#F02835',
-                        fontSize: 7,
-                        marginLeft: 3,
-                        // todo: type fix
-                        lineHeight: 'normal' as any,
-                      }}
-                    >
-                      {/* todo: add chevron */}
-                      {item.score > 0 ? '+' : ''}
-                      {item.score}
-                    </Text>
-                  }
                 </Text>
               }
-              contentStyle={{
-                paddingLeft: 8,
-              }}
-              style={{
-                padding: 0,
-              }}
-              description={`${item.servings} serving`}
-              titleStyle={{
-                fontSize: 14,
-                lineHeight: 16,
-                fontWeight: 500,
-                fontFamily: 'Inter_500Medium',
-                letterSpacing: -0.6,
-              }}
-              descriptionStyle={{
-                color: '#767676',
-                fontSize: 10,
-                lineHeight: 12,
-                marginTop: 3,
-                letterSpacing: -0.6,
-              }}
+              contentStyle={styles.listItemContent}
+              style={styles.listItem}
+              description={`${food.servings} serving`}
+              titleStyle={styles.listItemTitleText}
+              descriptionStyle={styles.listItemDescription}
               left={() => (
                 <View
                   style={{
-                    backgroundColor: item.score >= 0 ? '#CFFFD9' : '#FFCAD2',
-                    width: 32,
-                    height: 32,
-                    borderRadius: 6,
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    ...styles.listItemIconWrapper,
+                    ...(food.score >= 0
+                      ? styles.positiveBackground
+                      : styles.negativeBackground),
                   }}
                 >
-                  {getIcon(item.category)}
+                  {getIcon(food.category)}
                 </View>
               )}
               right={() => (
-                <View style={{ display: 'flex', justifyContent: 'center' }}>
+                <View style={styles.listItemViewMore}>
                   <Button
                     mode="text"
-                    onPress={() => handleOnItemButtonPress(item)}
+                    onPress={() => handleOnItemButtonPress(food)}
                   >
                     <DotsIcon />
                   </Button>
@@ -228,39 +190,12 @@ const JournalOccasion = ({
             onPress={() => handleOnButtonClick(occasion)}
             key="add more"
             title="Add new item"
-            contentStyle={{
-              paddingLeft: 8,
-            }}
-            style={{
-              padding: 0,
-            }}
-            titleStyle={{
-              fontSize: 12,
-              lineHeight: 14,
-              fontWeight: 400,
-              fontFamily: 'Inter_400Regular',
-              letterSpacing: -0.6,
-            }}
-            descriptionStyle={{
-              color: '#767676',
-              fontSize: 10,
-              lineHeight: 12,
-              marginTop: 3,
-              letterSpacing: -0.6,
-            }}
+            contentStyle={styles.listItemContent}
+            style={styles.listItem}
+            titleStyle={styles.listitemAddNewTitleText}
+            descriptionStyle={styles.listItemDescription}
             left={() => (
-              <View
-                style={{
-                  width: 24,
-                  height: 24,
-                  marginLeft: 4,
-                  marginRight: 4,
-                  borderRadius: 6,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: '#D9D9D9',
-                }}
-              >
+              <View style={styles.listItemAddNewIconWrapper}>
                 <PlusIcon />
               </View>
             )}
@@ -272,12 +207,10 @@ const JournalOccasion = ({
         <Dialog
           visible={isEditDialogOpen}
           onDismiss={dismissDialog}
-          style={{
-            backgroundColor: 'white',
-          }}
+          style={styles.editDialog}
         >
-          <Dialog.Title style={{ textTransform: 'capitalize' }}>
-            Edit <strong>{editingData?.title}</strong>
+          <Dialog.Title style={styles.listItemTitleTextInner}>
+            Edit <strong>{editingData?.name}</strong>
           </Dialog.Title>
           <Dialog.Content>
             <Text>Servings</Text>
@@ -292,7 +225,7 @@ const JournalOccasion = ({
 
             <PaperSelect
               inputRef={singleSelectRef}
-              label="Select Gender"
+              label="Select Category"
               value={categoryInput.value || ''}
               // todo: fix type
               onSelection={(value: any) => {
@@ -304,7 +237,7 @@ const JournalOccasion = ({
                 })
               }}
               arrayList={[...categoryInput.list]}
-              selectedArrayList={[...categoryInput.selectedList]}
+              selectedArrayList={categoryInput.selectedList}
               multiEnable={false}
               hideSearchBox={true}
               textInputMode="outlined"
@@ -314,9 +247,21 @@ const JournalOccasion = ({
             <Button onPress={dismissDialog}>Cancel</Button>
             <Button
               disabled={!servingInput && !categoryInput}
-              onPress={updateData}
+              onPress={() => {
+                try {
+                  updateFoodEntry(
+                    occasion,
+                    editingData,
+                    categoryInput.value as FoodCategory,
+                    servingInput || 1,
+                  )
+                } catch (e) {
+                } finally {
+                  dismissDialog()
+                }
+              }}
               mode="contained"
-              style={{ paddingLeft: 8, paddingRight: 8, borderRadius: 6 }}
+              style={styles.editDialogSubmitButton}
             >
               Done
             </Button>
@@ -380,6 +325,69 @@ const styles = StyleSheet.create({
   },
   negative: {
     color: '#F02835',
+  },
+  listItem: {
+    padding: 0,
+  },
+  listItemTitleText: {
+    fontSize: 14,
+    lineHeight: 16,
+    fontWeight: 500,
+    fontFamily: 'Inter_500Medium',
+    letterSpacing: -0.6,
+  },
+  listitemAddNewTitleText: {
+    fontSize: 12,
+    lineHeight: 14,
+    fontWeight: 400,
+    fontFamily: 'Inter_400Regular',
+    letterSpacing: -0.6,
+  },
+  listItemAddNewIconWrapper: {
+    width: 24,
+    height: 24,
+    marginLeft: 4,
+    marginRight: 4,
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#D9D9D9',
+  },
+  listItemDescription: {
+    color: '#767676',
+    fontSize: 10,
+    lineHeight: 12,
+    marginTop: 3,
+    letterSpacing: -0.6,
+  },
+  listItemTitle: { display: 'flex', alignItems: 'flex-start' },
+  listItemTitleTextInner: { textTransform: 'capitalize' },
+  listItemTitleScore: {
+    fontSize: 7,
+    marginLeft: 3,
+    // todo: fix type
+    lineHeight: 'normal' as any,
+  },
+  listItemContent: {
+    paddingLeft: 8,
+  },
+  listItemIconWrapper: {
+    width: 32,
+    height: 32,
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  listItemViewMore: { display: 'flex', justifyContent: 'center' },
+  editDialog: {
+    backgroundColor: 'white',
+  },
+  editDialogSubmitButton: { paddingLeft: 8, paddingRight: 8, borderRadius: 6 },
+  positiveBackground: {
+    backgroundColor: '#CFFFD9',
+  },
+  negativeBackground: {
+    backgroundColor: '#FFCAD2',
   },
 })
 

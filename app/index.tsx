@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
-import { StyleSheet, Text, TextInput, View } from 'react-native'
-import { Button } from 'react-native-elements'
-import { useTheme } from 'react-native-paper'
+import { StyleSheet, Text, View } from 'react-native'
+import { Portal, Snackbar, Button } from 'react-native-paper'
 import { router } from 'expo-router'
 
 import {
@@ -14,13 +13,21 @@ import {
 
 import { format } from 'date-fns'
 
+import { useAppTheme } from './_layout'
 import { BasicText } from '@/components/BasicText'
 import { createJournal, listJournal } from '@/api/journalService'
 import { Journal } from '@/types/Journal'
 import { Textarea } from '@/components/Textarea'
 
 const Index = () => {
-  const theme = useTheme()
+  const theme = useAppTheme()
+
+  const [fontsLoaded] = useFonts({
+    Inter_200ExtraLight,
+    Inter_300Light,
+    Inter_400Regular,
+    Inter_900Black,
+  })
 
   const styles = StyleSheet.create({
     container: {
@@ -42,63 +49,52 @@ const Index = () => {
       marginBottom: 4,
       fontWeight: 300,
     },
-    buttonWrapper: { borderRadius: 6, overflow: 'hidden', fontSize: 4 },
-    button: {
-      backgroundColor: theme.colors.primary,
-    },
-    buttonTitle: { fontSize: 12 },
-  })
-
-  const [fontsLoaded] = useFonts({
-    Inter_200ExtraLight,
-    Inter_300Light,
-    Inter_400Regular,
-    Inter_900Black,
+    button: { borderRadius: 6, fontSize: 12 },
   })
 
   const today = format(new Date(), 'ddMyyyy')
 
+  const [serverError, setServerError] = useState<string | undefined>()
+
   useEffect(() => {
-    const checkIfHasData = async () => {
+    const redirectIfAlreadyAddedData = async () => {
       try {
-        const response = await listJournal()
-        const journals = await response.json()
-        const hasJournal = journals.find(({ id }: Journal) => id === today)
-        if (hasJournal) {
-          router.push(`/journal?date=${hasJournal.id}`)
+        const journals = await (await listJournal()).json()
+        const todayJournal = journals.find(({ id }: Journal) => id === today)
+        if (todayJournal) {
+          router.push(`/journal?date=${todayJournal.id}`)
         }
       } catch (error) {
-        // todo: handle error
+        setServerError(
+          error instanceof Error ? error.message : (error as string),
+        )
       }
     }
 
-    checkIfHasData()
+    redirectIfAlreadyAddedData()
   }, [])
 
-  const [foodConsumed, setFoodConsumed] = useState<string>()
+  const [userInput, setUserInput] = useState<string>()
 
-  const updateInput = (userInput: string) => {
-    if (foodConsumed !== userInput) {
-      setFoodConsumed(userInput)
-    }
+  const updateInput = (input: string) => {
+    if (userInput !== input) setUserInput(input)
   }
 
   const handleOnButtonPress = async () => {
-    if (foodConsumed) {
-      try {
-        await createJournal(today, foodConsumed)
-      } catch (error) {
-        // todo: handle error
-      } finally {
-        router.push(`/journal?date=${today}`)
-      }
+    if (!userInput) return
+    try {
+      await createJournal(today, userInput)
+    } catch (error) {
+      setServerError(error instanceof Error ? error.message : (error as string))
+    } finally {
+      router.push(`/journal?date=${today}`)
     }
   }
 
   return (
     <View style={styles.container}>
       {fontsLoaded ? (
-        <>
+        <View>
           {/* todo: add help button */}
           <Text style={styles.title}>What did you eat today?</Text>
 
@@ -107,28 +103,30 @@ const Index = () => {
             servings automatically.
           </BasicText>
 
-          {/* todo: add error if form empty */}
           <Textarea
-            value={foodConsumed}
+            value={userInput}
             handleOnChange={updateInput}
             placeholder="Breakfast: 2 apples, 14 bananas, 1 serving oats..."
           />
 
-          {/* todo: replace with react native paper */}
-          <View style={styles.buttonWrapper}>
-            {/* todo: add arrow icon */}
-            <Button
-              onPress={handleOnButtonPress}
-              buttonStyle={styles.button}
-              titleStyle={styles.buttonTitle}
-              title="That's everything. Let's go!"
-            />
-          </View>
-        </>
+          <Button
+            mode="contained"
+            style={styles.button}
+            disabled={!userInput}
+            onPress={handleOnButtonPress}
+          >
+            That's everything. Let's go.
+          </Button>
+        </View>
       ) : (
-        // Todo: better loading
-        <Text>Loading...</Text>
+        <BasicText>Loading...</BasicText>
       )}
+
+      <Portal>
+        <Snackbar visible={serverError !== undefined} onDismiss={() => {}}>
+          <BasicText color="white">Server error: {serverError}</BasicText>
+        </Snackbar>
+      </Portal>
     </View>
   )
 }

@@ -1,11 +1,13 @@
 import { StyleSheet } from 'react-native'
-import { TextInput, useTheme } from 'react-native-paper'
+import { TextInput } from 'react-native-paper'
 
 import {
   Inter_200ExtraLight,
   Inter_400Regular,
   useFonts,
 } from '@expo-google-fonts/inter'
+
+import { useAppTheme } from '@/app/_layout'
 
 type Props = {
   value?: string
@@ -14,7 +16,7 @@ type Props = {
 }
 
 export const Textarea = ({ value, placeholder, handleOnChange }: Props) => {
-  const theme = useTheme()
+  const theme = useAppTheme()
 
   const [fontsLoaded] = useFonts({
     Inter_200ExtraLight,
@@ -28,7 +30,6 @@ export const Textarea = ({ value, placeholder, handleOnChange }: Props) => {
       borderRadius: 6,
       overflow: 'hidden',
     },
-    underline: {},
     textarea: {
       fontFamily: 'Inter_400Regular',
       backgroundColor: theme.colors.background,

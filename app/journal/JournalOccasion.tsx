@@ -11,6 +11,7 @@ import PlusIcon from '../../components/icons/Plus'
 import SweetIcon from '../../components/icons/Sweet'
 import FruitIcon from '../../components/icons/Fruit'
 import WholeGrainIcon from '../../components/icons/WholeGrain'
+import { useAppTheme } from '../_layout'
 
 interface Props {
   occasion: Occasion
@@ -39,6 +40,140 @@ const JournalOccasion = ({
   isLast,
   updateFoodEntry,
 }: Props) => {
+  const theme = useAppTheme()
+
+  const styles = StyleSheet.create({
+    h3: {
+      fontFamily: 'Inter_600SemiBold',
+      fontWeight: 600,
+      fontSize: 16,
+      lineHeight: 19,
+      marginBottom: 4,
+      letterSpacing: -0.6,
+      display: 'flex',
+      textTransform: 'capitalize',
+    },
+    occasion: {
+      display: 'flex',
+      flexDirection: 'row',
+    },
+    occasionData: {
+      paddingBottom: 16,
+      paddingRight: 16,
+      width: '100%',
+    },
+    timeline: {
+      marginRight: 12,
+      marginTop: 4,
+      height: 'auto',
+      display: 'flex',
+      alignItems: 'center',
+    },
+    ball: {
+      width: 9,
+      height: 9,
+      borderRadius: '100%',
+      backgroundColor: theme.colors.primary,
+    },
+    line: {
+      width: 1,
+      height: '100%',
+      backgroundColor: theme.colors.primary,
+    },
+    lastLine: {
+      width: 1,
+      height: '100%',
+      backgroundImage:
+        'linear-gradient(180deg, rgba(253,113,33,1) 0%, rgba(253,113,33,1) 42%, rgba(253,113,33,0.7035407913165266) 60%, rgba(255,255,255,0) 100%)',
+    },
+    dqsScore: {
+      fontSize: 10,
+      lineHeight: 10,
+    },
+    positive: {
+      color: theme.colors.positive,
+    },
+    negative: {
+      color: theme.colors.negative,
+    },
+    listItem: {
+      paddingRight: 0,
+      paddingTop: 0,
+      paddingBottom: 0,
+    },
+    listItemTitleText: {
+      fontSize: 14,
+      lineHeight: 16,
+      fontWeight: 500,
+      fontFamily: 'Inter_500Medium',
+      letterSpacing: -0.6,
+    },
+    listitemAddNewTitleText: {
+      fontSize: 12,
+      lineHeight: 14,
+      fontWeight: 400,
+      fontFamily: 'Inter_400Regular',
+      letterSpacing: -0.6,
+    },
+    listItemAddNewIconWrapper: {
+      width: 28,
+      height: 28,
+      marginLeft: 5,
+      marginRight: 5,
+      borderRadius: 6,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: theme.colors.outline,
+    },
+    listItemDescription: {
+      color: theme.colors.grey,
+      fontSize: 10,
+      lineHeight: 12,
+      marginTop: 3,
+      letterSpacing: -0.6,
+    },
+    listItemTitle: { display: 'flex', alignItems: 'flex-start' },
+    listItemTitleTextInner: { textTransform: 'capitalize' },
+    listItemTitleScore: {
+      fontSize: 7,
+      marginLeft: 3,
+      // todo: fix type
+      lineHeight: 'normal' as any,
+    },
+    listItemContent: {
+      paddingLeft: 8,
+      maxHeight: 38,
+    },
+    listItemIconWrapper: {
+      width: 38,
+      height: 38,
+      borderRadius: 6,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    listItemViewMore: {
+      display: 'flex',
+      justifyContent: 'center',
+      height: 38,
+      width: 38,
+    },
+    listItemViewMoreButton: { minWidth: 38 },
+    editDialog: {
+      backgroundColor: 'white',
+    },
+    editDialogSubmitButton: {
+      paddingLeft: 8,
+      paddingRight: 8,
+      borderRadius: 6,
+    },
+    positiveBackground: {
+      backgroundColor: theme.colors.positiveBackground,
+    },
+    negativeBackground: {
+      backgroundColor: theme.colors.negativeBackground,
+    },
+  })
+
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
 
   const [editingData, setEditingData] = useState<Food | undefined>()
@@ -273,133 +408,5 @@ const JournalOccasion = ({
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  h3: {
-    fontFamily: 'Inter_600SemiBold',
-    fontWeight: 600,
-    fontSize: 16,
-    lineHeight: 19,
-    marginBottom: 4,
-    letterSpacing: -0.6,
-    display: 'flex',
-    textTransform: 'capitalize',
-  },
-  occasion: {
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  occasionData: {
-    paddingBottom: 16,
-    paddingRight: 16,
-    width: '100%',
-  },
-  timeline: {
-    marginRight: 12,
-    marginTop: 4,
-    height: 'auto',
-    display: 'flex',
-    alignItems: 'center',
-  },
-  ball: {
-    width: 9,
-    height: 9,
-    borderRadius: '100%',
-    backgroundColor: '#FD7121',
-  },
-  line: {
-    width: 1,
-    height: '100%',
-    backgroundColor: '#FD7121',
-  },
-  lastLine: {
-    width: 1,
-    height: '100%',
-    backgroundImage:
-      'linear-gradient(180deg, rgba(253,113,33,1) 0%, rgba(253,113,33,1) 42%, rgba(253,113,33,0.7035407913165266) 60%, rgba(255,255,255,0) 100%)',
-  },
-  dqsScore: {
-    fontSize: 10,
-    lineHeight: 10,
-  },
-  positive: {
-    color: '#00CA2C',
-  },
-  negative: {
-    color: '#F02835',
-  },
-  listItem: {
-    paddingRight: 0,
-    paddingTop: 0,
-    paddingBottom: 0,
-  },
-  listItemTitleText: {
-    fontSize: 14,
-    lineHeight: 16,
-    fontWeight: 500,
-    fontFamily: 'Inter_500Medium',
-    letterSpacing: -0.6,
-  },
-  listitemAddNewTitleText: {
-    fontSize: 12,
-    lineHeight: 14,
-    fontWeight: 400,
-    fontFamily: 'Inter_400Regular',
-    letterSpacing: -0.6,
-  },
-  listItemAddNewIconWrapper: {
-    width: 28,
-    height: 28,
-    marginLeft: 5,
-    marginRight: 5,
-    borderRadius: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#D9D9D9',
-  },
-  listItemDescription: {
-    color: '#767676',
-    fontSize: 10,
-    lineHeight: 12,
-    marginTop: 3,
-    letterSpacing: -0.6,
-  },
-  listItemTitle: { display: 'flex', alignItems: 'flex-start' },
-  listItemTitleTextInner: { textTransform: 'capitalize' },
-  listItemTitleScore: {
-    fontSize: 7,
-    marginLeft: 3,
-    // todo: fix type
-    lineHeight: 'normal' as any,
-  },
-  listItemContent: {
-    paddingLeft: 8,
-    maxHeight: 38,
-  },
-  listItemIconWrapper: {
-    width: 38,
-    height: 38,
-    borderRadius: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  listItemViewMore: {
-    display: 'flex',
-    justifyContent: 'center',
-    height: 38,
-    width: 38,
-  },
-  listItemViewMoreButton: { minWidth: 38 },
-  editDialog: {
-    backgroundColor: 'white',
-  },
-  editDialogSubmitButton: { paddingLeft: 8, paddingRight: 8, borderRadius: 6 },
-  positiveBackground: {
-    backgroundColor: '#CFFFD9',
-  },
-  negativeBackground: {
-    backgroundColor: '#FFCAD2',
-  },
-})
 
 export default JournalOccasion

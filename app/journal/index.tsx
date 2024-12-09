@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ScrollView, StyleSheet, Text, TextInput } from 'react-native'
+import { ScrollView, StyleSheet, Text } from 'react-native'
 import { Portal, Dialog, Button, Snackbar } from 'react-native-paper'
 import HTML from 'react-native-render-html'
 import { useLocalSearchParams } from 'expo-router'
@@ -20,8 +20,10 @@ import { getJournal, updateJournal } from '@/api/journalService'
 
 import { Food, FoodCategory, Journal, Occasion } from '@/types/Journal'
 
+import { useAppTheme } from '../_layout'
 import { BasicText } from '@/components/BasicText'
 import JournalOccasion from '@/app/journal/JournalOccasion'
+import { Textarea } from '@/components/Textarea'
 
 const Occasions: Array<Occasion> = ['breakfast', 'lunch', 'dinner', 'snacks']
 
@@ -36,6 +38,8 @@ const processFoodData = (food: string): Array<Food> =>
   }))
 
 const JournalPage = () => {
+  const theme = useAppTheme()
+
   const [fontsLoaded] = useFonts({
     Inter_200ExtraLight,
     Inter_300Light,
@@ -43,6 +47,49 @@ const JournalPage = () => {
     Inter_500Medium,
     Inter_600SemiBold,
     Inter_900Black,
+  })
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 24,
+      paddingTop: 24,
+      backgroundColor: 'white',
+    },
+    dialog: {
+      backgroundColor: 'white',
+    },
+    dialogSubmit: { paddingLeft: 8, paddingRight: 8, borderRadius: 6 },
+    title: {
+      fontFamily: 'Inter_900Black',
+      fontSize: 24,
+      lineHeight: 29,
+      marginBottom: 8,
+      letterSpacing: -0.6,
+    },
+    subtext: {
+      opacity: 0.6,
+      marginBottom: 4,
+      fontWeight: 300,
+      fontFamily: 'Inter_300Light',
+    },
+    h2: {
+      fontFamily: 'Inter_900Black',
+      fontSize: 18,
+      lineHeight: 22,
+      marginBottom: 12,
+      letterSpacing: -0.6,
+      marginTop: 26,
+    },
+    positive: {
+      color: theme.colors.positive,
+    },
+    negative: {
+      color: theme.colors.negative,
+    },
+    snackbarText: {
+      color: 'white',
+    },
   })
 
   const searchParams = useLocalSearchParams()
@@ -219,13 +266,10 @@ const JournalPage = () => {
           <Dialog.Title>Add new item</Dialog.Title>
 
           <Dialog.Content>
-            <TextInput
+            <Textarea
               value={newJournalEntries?.entry}
-              onChangeText={updateNewJournalEntry}
-              multiline={true}
-              numberOfLines={8}
-              style={newJournalEntries ? styles.textarea : styles.placeholder}
               placeholder="Breakfast: 2 apples, 14 bananas, 1 serving oats..."
+              handleOnChange={updateNewJournalEntry}
             />
           </Dialog.Content>
 
@@ -258,71 +302,5 @@ const JournalPage = () => {
     </ScrollView>
   )
 }
-
-const baseStyles = StyleSheet.create({
-  textarea: {
-    textAlignVertical: 'top',
-    padding: 16,
-    backgroundColor: '#F7F7F7',
-    borderRadius: 6,
-    borderWidth: 0.5,
-    borderColor: '#D9D9D9',
-    fontSize: 12,
-    letterSpacing: -0.6,
-    minHeight: 125,
-    fontFamily: 'Inter_400Regular',
-    fontWeight: 400,
-  },
-})
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    paddingTop: 24,
-    backgroundColor: 'white',
-  },
-  dialog: {
-    backgroundColor: 'white',
-  },
-  dialogSubmit: { paddingLeft: 8, paddingRight: 8, borderRadius: 6 },
-  title: {
-    fontFamily: 'Inter_900Black',
-    fontSize: 24,
-    lineHeight: 29,
-    marginBottom: 8,
-    letterSpacing: -0.6,
-  },
-  subtext: {
-    opacity: 0.6,
-    marginBottom: 4,
-    fontWeight: 300,
-    fontFamily: 'Inter_300Light',
-  },
-  h2: {
-    fontFamily: 'Inter_900Black',
-    fontSize: 18,
-    lineHeight: 22,
-    marginBottom: 12,
-    letterSpacing: -0.6,
-    marginTop: 26,
-  },
-  textarea: baseStyles.textarea,
-  placeholder: {
-    ...baseStyles.textarea,
-    color: 'rgba(118, 118, 118, 0.5)',
-    fontWeight: 200,
-    fontFamily: 'Inter_200ExtraLight',
-  },
-  positive: {
-    color: '#00CA2C',
-  },
-  negative: {
-    color: '#F02835',
-  },
-  snackbarText: {
-    color: 'white',
-  },
-})
 
 export default JournalPage

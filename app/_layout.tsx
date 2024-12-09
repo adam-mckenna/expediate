@@ -6,6 +6,9 @@ const theme = {
   colors: {
     ...DefaultTheme.colors,
     primary: '#FD7121',
+    background: '#F7F7F7',
+    outline: '#D9D9D9',
+    surface: 'rgba(255, 255, 255, 1)',
   },
 }
 

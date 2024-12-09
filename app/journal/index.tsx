@@ -21,7 +21,7 @@ import { getJournal, updateJournal } from '@/api/journalService'
 import { Food, FoodCategory, Journal, Occasion } from '@/types/Journal'
 
 import { BasicText } from '@/components/BasicText'
-import JournalOccasion from '@/components/JournalOccasion'
+import JournalOccasion from '@/app/journal/JournalOccasion'
 
 const Occasions: Array<Occasion> = ['breakfast', 'lunch', 'dinner', 'snacks']
 
@@ -36,7 +36,7 @@ const processFoodData = (food: string): Array<Food> =>
   }))
 
 const JournalPage = () => {
-  let [fontsLoaded] = useFonts({
+  const [fontsLoaded] = useFonts({
     Inter_200ExtraLight,
     Inter_300Light,
     Inter_400Regular,
@@ -157,7 +157,7 @@ const JournalPage = () => {
     if (data && journal) {
       const index = journal[occasion].indexOf(data) as number
 
-      let newData = journal
+      const newData = journal
       newData[occasion][index] = {
         ...newData[occasion][index],
         category: category,

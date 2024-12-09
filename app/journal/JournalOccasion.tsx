@@ -6,11 +6,11 @@ import { ListItem } from 'react-native-paper-select/lib/typescript/interface/pap
 
 import { Food, FoodCategory, Occasion } from '@/types/Journal'
 
-import DotsIcon from './icons/Dots'
-import PlusIcon from './icons/Plus'
-import SweetIcon from './icons/Sweet'
-import FruitIcon from './icons/Fruit'
-import WholeGrainIcon from './icons/WholeGrain'
+import DotsIcon from '../../components/icons/Dots'
+import PlusIcon from '../../components/icons/Plus'
+import SweetIcon from '../../components/icons/Sweet'
+import FruitIcon from '../../components/icons/Fruit'
+import WholeGrainIcon from '../../components/icons/WholeGrain'
 
 interface Props {
   occasion: Occasion
@@ -89,21 +89,22 @@ const JournalOccasion = ({
   }
 
   // todo: create more icons for other categories.
-  const getIcon = (category: FoodCategory) => {
-    let icon = <></>
-    switch (category) {
-      case 'Fruit':
-        icon = <FruitIcon />
-        break
-      case 'Sweets':
-        icon = <SweetIcon />
-        break
-      case 'Whole Grains':
-        icon = <WholeGrainIcon />
-        break
-    }
-    return icon
+  const iconMap: Record<FoodCategory, JSX.Element> = {
+    'Whole Grains': <WholeGrainIcon />,
+    'Lean Meat Or Fish': <></>,
+    'Nuts And Seeds': <></>,
+    'Refined Grains': <></>,
+    'Fried Foods': <></>,
+    'Fatty Proteins': <></>,
+    Fruit: <FruitIcon />,
+    Sweets: <SweetIcon />,
+    Vegetables: <></>,
+    Dairy: <></>,
+    Other: <></>,
   }
+
+  // todo: implement generic 'food' icon as placeholder
+  const getIcon = (category: FoodCategory) => iconMap[category] || <></>
 
   const handleOnItemButtonPress = (item: Food) => {
     setIsEditDialogOpen(true)

@@ -9,7 +9,7 @@ export const BasicText = ({
   children: React.ReactNode
   style?: Object
 }) => {
-  let [fontsLoaded] = useFonts({
+  const [fontsLoaded] = useFonts({
     Inter_400Regular,
   })
 
